@@ -1,0 +1,40 @@
+---
+################
+# Ubuntu steps #
+################
+- name: Install the "build essential" tools
+  ansible.builtin.apt:
+    name: build-essential
+    state: present
+
+- name: Install "core" packages
+  ansible.builtin.apt:
+    name:
+      - autoconf
+      - automake
+      - cmake
+      - curl
+      - git
+      - git-lfs
+      - fail2ban
+      - firewalld
+      - krb5-admin-server
+      - krb5-kdc
+      - openjdk-11-jdk
+      - libboost-dev
+      - libmnl-dev
+      - libzstd-dev
+      - lm-sensors
+      - lsof
+      - make
+      - ncat
+      - net-tools
+      - pkg-config
+      - mlocate
+      - screen
+      - tmux
+      - uuid-dev
+      - wget
+      - vim
+      - zlib1g-dev
+    state: present

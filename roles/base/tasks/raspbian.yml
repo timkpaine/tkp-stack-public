@@ -1,0 +1,36 @@
+---
+################
+# Raspbian steps #
+################
+- name: Run the equivalent of "apt-get update"
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Update all packages to the latest version
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Update all packages to the latest version
+  ansible.builtin.apt:
+    name:
+      - autoconf
+      - automake
+      - avahi-daemon
+      - avahi-utils
+      - cmake
+      - cron
+      - curl
+      - dnsutils
+      - fail2ban
+      - firewalld
+      - git-lfs
+      - insserv
+      - make
+      - python3
+      - python3-dev
+      - samba
+      - tmux
+      - wget
+      - vim
+    state: present

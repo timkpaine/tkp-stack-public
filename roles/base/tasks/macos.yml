@@ -1,0 +1,97 @@
+---
+#############
+# osx steps #
+#############
+- name: Install "core" packages
+  community.general.homebrew:
+    name:
+      - autoconf
+      - automake
+      - bat
+      - boost
+      - cairo
+      - clang-format
+      - cmake
+      - curl
+      - dos2unix
+      - duf
+      - flatbuffers
+      - fzf
+      - gcc
+      - gdb
+      - geckodriver
+      - git
+      - git-lfs
+      - graphviz
+      - gtop
+      - hexyl
+      - highlight
+      - hiredis
+      - htop
+      - jemalloc
+      - jsoncpp
+      - kafka
+      - krb5
+      - kubernetes-cli
+      - launchcontrol
+      - libev
+      - libevent
+      - libffi
+      - libmagic
+      - libpng
+      - libpthread-stubs
+      - librdkafka
+      - libsodium
+      - libuv
+      - lz4
+      - multimarkdown
+      - ncurses
+      - nginx
+      - nmap
+      - node
+      - nvm
+      - open-mpi
+      - openjdk@11
+      - openldap
+      - openssl@1.1
+      - pkg-config
+      - pybind11
+      - python@3.10
+      - qt
+      - quantlib
+      - rapidjson
+      - readline
+      - redis
+      - ruby
+      - rustup-init
+      - sbt
+      - scala
+      - screenfetch
+      - selenium-server
+      - selenium-server-standalone
+      - shyaml
+      - snappy
+      - sqlite
+      - ta-lib
+      - tbb
+      - tcl-tk
+      - tig
+      - tmux
+      - watch
+      - wget
+      - zeromq
+      - zookeeper
+      - zstd
+    state: present
+
+- name: Create programs directory if it does not exist
+  ansible.builtin.file:
+    path: /Users/timkpaine/Developer
+    state: directory
+    mode: '0755'
+
+- name: Create projects directory if it does not exist
+  ansible.builtin.file:
+    path: /Users/timkpaine/Developer/projects
+    state: directory
+    mode: '0755'
