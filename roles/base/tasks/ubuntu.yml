@@ -12,6 +12,9 @@
     name:
       - autoconf
       - automake
+      - avahi-daemon
+      - avahi-discover
+      - avahi-utils
       - cmake
       - curl
       - git

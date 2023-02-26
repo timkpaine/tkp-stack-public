@@ -1,0 +1,20 @@
+---
+dependencies:
+  - role: nginx
+
+galaxy_info:
+  role_name: code_server
+  author: timkpaine
+  description: Install Code Server (VS Code over web)
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Raspbian
+    - name: Ubuntu
+  galaxy_tags:
+    - development

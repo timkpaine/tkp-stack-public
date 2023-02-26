@@ -1,0 +1,40 @@
+---
+- name: Download code-server 4.10 .deb
+  ansible.builtin.get_url:
+    url: https://github.com/coder/code-server/releases/download/v4.10.0/code-server_4.10.0_amd64.deb
+    dest: /opt/src/download/code-server_4.10.0_amd64.deb
+    mode: '0755'
+
+- name: Install code-server 4.10 .deb file
+  ansible.builtin.apt:
+    deb: /opt/src/download/code-server_4.10.0_amd64.deb
+
+- name: Create symbolic link to bridge different installation paths
+  ansible.builtin.file:
+    src: /usr/bin/code-server
+    dest: /usr/local/bin/code-server
+    state: link
+
+- name: Add systemd service for code-server
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/code-server@.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Code-server for %i
+      After=network.target
+
+      [Service]
+      User=%i
+      WorkingDirectory=/home/%i
+      Restart=always
+      ExecStart=/usr/bin/code-server --config /etc/code-server/config.yaml
+
+      [Install]
+      WantedBy=default.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true

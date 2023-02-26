@@ -1,8 +1,12 @@
 setup:  ## install required dependencies
 	pip install ansible ansible-lint
 
-lint: 
+lint: check-deps  ## run linter with ansible-lint
 	ansible-lint -p playbooks/* roles/
+
+check-deps:  ## check that we haven't emptied dependencies for testing
+	bash -c 'grep -rn "dependencies: \[\]" ./roles/'
+	bash -c '[[ "$$(grep -rn "dependencies: \[\]" ./roles/ | wc -l | tee >(cat 1>&2))" == "2" ]]'
 
 # Thanks to Francoise at marmelab.com for this
 .DEFAULT_GOAL := help
@@ -12,4 +16,4 @@ help:
 print-%:
 	@echo '$*=$($*)'
 
-.PHONY: help setup lint
+.PHONY: help setup lint check-deps
