@@ -1,0 +1,32 @@
+---
+- name: Add reboot script to crontab
+  ansible.builtin.lineinfile:
+    path: /etc/crontab
+    line: "@reboot root /usr/local/bin/on_reboot.sh"
+
+- name: Copy a on_reboot.sh file into place
+  ansible.builtin.copy:
+    dest: /usr/local/bin/on_reboot.sh
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # sudo chmod a+w /var/run/postgresql/
+
+      # PGDATA=/var/lib/airflow/db && sudo --preserve-env=PGDATA -u airflow /usr/bin/pg_ctl start -D ${PGDATA} -t 300
+      # sudo sysctl kernel.pid_max=4194304
+
+      # sudo sh -c 'printf "search members.linode.com paine.nyc\nnameserver 127.0.0.1\nnameserver 8.8.8.8\nnameserver 97.107.133.4\nnameserver 66.175.211.5\nnameserver 207.192.69.5" > /etc/resolv.conf'
+      # sudo iptables -F
+  become: true
+
+- name: Reload service crond, in all cases
+  ansible.builtin.systemd:
+    name: crond
+    state: restarted
+  when: "OS == 'EL'"
+
+- name: Reload service crond, in all cases
+  ansible.builtin.systemd:
+    name: cron
+    state: restarted
+  when: "OS != 'EL'"

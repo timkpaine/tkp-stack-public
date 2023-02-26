@@ -1,0 +1,47 @@
+---
+- name: Check if Docker installed
+  ansible.builtin.shell: |
+    which docker
+  register: docker_install
+  failed_when: false
+  when: "OS == 'EL'"
+
+- name: Install Docker Repo
+  ansible.builtin.shell: |
+    ansible.builtin.dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  args:
+    executable: /bin/bash
+  when: "docker_install is failed and OS == 'EL'"
+
+- name: Install Docker
+  ansible.builtin.dnf:
+    name:
+      - docker-ce-18.03.1.ce-1.el7.centos
+    state: present
+  when: "docker_install is failed and OS == 'EL'"
+
+- name: Install podman
+  ansible.builtin.apt:
+    name: podman
+    state: present
+  when: "OS == 'Ubuntu'"
+
+- name: Run docker
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+  when: "OS == 'EL'"
+
+- name: Run podman
+  ansible.builtin.systemd:
+    name: podman
+    state: started
+    enabled: true
+  when: "OS == 'Ubuntu'"
+
+- name: Add prune script to crontab
+  ansible.builtin.lineinfile:
+    path: /etc/crontab
+    search_string: "0 3 * * *"
+    line: "0 3 * * * root docker system prune -a --volumes"

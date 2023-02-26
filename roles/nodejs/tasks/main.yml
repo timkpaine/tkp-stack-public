@@ -1,0 +1,72 @@
+---
+# - name: Install nodejs repo
+#   ansible.builtin.shell: |
+#     curl -sL https://rpm.nodesource.com/setup_16.x | bash -
+#   args:
+#     executable: /bin/bash
+#   vars:
+#     run: true
+#   when: run
+#   become: true
+
+# - name: Install nodejs package
+#   ansible.builtin.dnf:
+#     name:
+#       - nodejs
+#     state: present
+#     update_cache: true
+#   become: true
+#   when: "OS == 'EL'"
+
+# - name: Install yarn
+#   ansible.builtin.shell: |
+#     npm install -g yarn npm-run-all
+#   args:
+#     executable: /bin/bash
+#   vars:
+#     run: true
+#   when: run
+#   become: true
+
+- name: Install nvm
+  ansible.builtin.git:
+    repo: 'https://github.com/nvm-sh/nvm.git'
+    dest: /opt/src/nvm
+    version: master
+    force: true
+
+- name: Create nvm install directory
+  ansible.builtin.file:
+    path: /usr/local/nvm/
+    state: directory
+    mode: '0755'
+
+- name: Create node install directory
+  ansible.builtin.file:
+    path: /usr/local/node/
+    state: directory
+    mode: '0755'
+
+- name: Add nvm config to /etc/profile.d
+  ansible.builtin.copy:
+    dest: /etc/profile.d/nvm.sh
+    mode: '0755'
+    owner: root
+    group: root
+    content: |
+      export NVM_DIR=/usr/local/nvm
+      source /opt/src/nvm/nvm.sh
+      # these configs dont work right
+      # export NPM_CONFIG_PREFIX=/usr/local/node
+      # export PATH="/usr/local/node/bin:$PATH"
+  become: true
+
+- name: Install latest node with nvm
+  ansible.builtin.shell: |
+      export NVM_DIR=/usr/local/nvm
+      source /opt/src/nvm/nvm.sh
+      nvm install node
+      nvm alias default node
+  args:
+    executable: /bin/bash
+  become: true
