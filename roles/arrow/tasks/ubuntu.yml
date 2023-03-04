@@ -2,12 +2,12 @@
 - name: Download apache arrow .deb
   ansible.builtin.get_url:
     url: https://apache.jfrog.io/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-jammy.deb
-    dest: /opt/src/download/apache-arrow.deb
+    dest: /opt/src/apache-arrow.deb
     mode: '0755'
 
 - name: Install apache-arrow.deb file
   ansible.builtin.apt:
-    deb: /opt/src/download/apache-arrow.deb
+    deb: /opt/src/apache-arrow.deb
 
 - name: Run the equivalent of "apt-get update"
   ansible.builtin.apt:

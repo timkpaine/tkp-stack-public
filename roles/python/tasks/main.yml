@@ -1,7 +1,7 @@
 ---
 - name: Create download directory
   ansible.builtin.file:
-    path: /opt/src/download
+    path: /opt/src
     state: directory
     mode: '0755'
 

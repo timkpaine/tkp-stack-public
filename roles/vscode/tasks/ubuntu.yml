@@ -7,12 +7,12 @@
 - name: Download VS Code .deb
   ansible.builtin.get_url:
     url: https://az764295.vo.msecnd.net/stable/6261075646f055b99068d3688932416f2346dd3b/code_1.73.1-1667967334_amd64.deb
-    dest: /opt/src/download/vscode.deb
+    dest: /opt/src/vscode.deb
     checksum: "sha1:541759cdd3a2b4eb23a532d7f3b1165209ce5b1a"
     mode: '0755'
   when: "already_installed.stat is not defined or not already_installed.stat.exists"
 
 - name: Install vscode.deb file
   ansible.builtin.apt:
-    deb: /opt/src/download/vscode.deb
+    deb: /opt/src/vscode.deb
   when: "already_installed.stat is not defined or not already_installed.stat.exists"
