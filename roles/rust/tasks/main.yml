@@ -6,9 +6,8 @@
     mode: '0755'
 
 - name: Run rustup installer
-  ansible.builtin.expect:
-    command: /opt/src/rustup-init.sh -y --no-modify-path
-    responses:
+  ansible.builtin.command:
+    cmd: /opt/src/rustup-init.sh -y --no-modify-path
     creates: "/usr/local/rust/bin/rustup"
   environment:
     RUSTUP_HOME: '/usr/local/rust'
