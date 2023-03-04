@@ -7,7 +7,7 @@
     name:
       - certbot
   become: true
-  when: "OS == 'EL' and inventory_hostname == 'host1.paine.nyc'"
+  when: "OS == 'EL'"
 
 ################
 # Ubuntu steps #
@@ -18,7 +18,7 @@
       - certbot
       - python3-certbot-nginx
     state: present
-  when: "OS == 'Ubuntu' and inventory_hostname == 'host1.paine.nyc'"
+  when: "OS == 'Ubuntu'"
 
 # https://github.com/conda-forge/miniforge#mambaforge
 
