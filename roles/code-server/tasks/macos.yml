@@ -60,5 +60,3 @@
       cert: true
       cert-host: {{ inventory_hostname }}
   become: true
-
--

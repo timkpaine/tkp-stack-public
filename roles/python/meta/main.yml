@@ -1,7 +1,8 @@
 ---
 dependencies:
-  - role: devtoolset11
-  - role: sqlite
+  - role: base
+  # - role: devtoolset11
+  # - role: sqlite
 
 galaxy_info:
   role_name: python

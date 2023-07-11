@@ -1,0 +1,30 @@
+---
+- name: Pull group variables
+  ansible.builtin.include_vars: groups.yml
+
+- name: Ensure groups exist
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  become: true
+  loop: "{{ GROUPS }}"
+
+- name: Add the users with a bash shell, appending the user's groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: /bin/bash
+    groups: "{{ item.groups }}"
+    append: true
+  become: true
+  loop: "{{ USERS }}"
+  when: "OS != 'macOS'"
+
+- name: Add the users with a bash shell, appending the user's groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: /bin/bash
+    groups: "developers"
+    append: true
+  become: true
+  loop: "{{ USERS }}"
+  when: "OS == 'macOS'"
