@@ -1,11 +1,10 @@
 ---
 dependencies: []
-  # - role: base
 
 galaxy_info:
-  role_name: docker
+  role_name: profile
   author: timkpaine
-  description: Install Docker
+  description: User Profile Dependencies
   license: AGPL-3.0
   min_ansible_version: "2.12"
   platforms:
@@ -14,6 +13,7 @@ galaxy_info:
         - "7"
         - "8"
         - "9"
+    - name: Raspbian
     - name: Ubuntu
     - name: macOS
   galaxy_tags:

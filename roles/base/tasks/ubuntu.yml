@@ -34,8 +34,6 @@
       - net-tools
       - pkg-config
       - mlocate
-      - screen
-      - tmux
       - uuid-dev
       - wget
       - vim

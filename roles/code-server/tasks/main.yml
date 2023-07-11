@@ -4,14 +4,6 @@
     path: /usr/local/bin/code-server
   register: already_installed
 
-- name: Include Ubuntu specific tasks
-  ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'Ubuntu' and (already_installed.stat is not defined or not already_installed.stat.exists)"
-
-- name: Include macOS specific tasks
-  ansible.builtin.include_tasks: macos.yml
-  when: "OS == 'macOS' and (already_installed.stat is not defined or not already_installed.stat.exists)"
-
 - name: Create download directory
   ansible.builtin.file:
     path: /etc/code-server
@@ -25,9 +17,17 @@
     content: |
       bind-addr: 0.0.0.0:{{ PORTS.CODESERVER }}
       auth: none
-      cert: false
+      cert: true
+      cert-host: {{ inventory_hostname }}
   become: true
 
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu' and (already_installed.stat is not defined or not already_installed.stat.exists)"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS' and (already_installed.stat is not defined or not already_installed.stat.exists)"
 
 # NOTE: we don't start code-server, we can run it ad-hoc so its not always-on
 # NOTE: we don't configure code-server with auth, locally its behind firewall

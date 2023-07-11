@@ -4,10 +4,39 @@
     path: /opt/src
     state: directory
     mode: '0755'
+  become: true
+
+- name: Create virtualenvs directory (linux)
+  ansible.builtin.file:
+    path: /var/lib/venvs
+    state: directory
+    mode: '0777'
+    owner: root
+    group: root
+  become: true
+  when: "OS != 'macOS'"
+
+- name: Create virtualenvs directory (mac)
+  ansible.builtin.file:
+    path: /var/lib/venvs
+    state: directory
+    mode: '0777'
+    owner: timkpaine
+    group: staff
+  become: true
+  when: "OS == 'macOS'"
 
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
   when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
 
 ###############################
 # Core Python deps / Venv dir #
@@ -21,11 +50,3 @@
       - matplotlib
       - virtualenv
   become: true
-
-- name: Create virtualenvs directory
-  ansible.builtin.file:
-    path: /var/lib/venvs
-    state: directory
-    mode: '0777'
-    owner: root
-    group: root

@@ -3,11 +3,9 @@
   ansible.builtin.apt:
     name: podman
     state: present
-  when: "OS == 'Ubuntu'"
 
 - name: Run podman
   ansible.builtin.systemd:
     name: podman
     state: started
     enabled: true
-  when: "OS == 'Ubuntu'"

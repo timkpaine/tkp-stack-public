@@ -1,0 +1,39 @@
+---
+- name: Install "core" packages
+  community.general.homebrew:
+    name:
+      # - bat
+      # - duf
+      - flyctl
+      - fzf
+      - gh
+      - golang
+      - graphviz
+      - gtop
+      # - hexyl
+      # - highlight
+      - hiredis
+      # - jq
+      - lunchy
+      - multimarkdown
+      # - qt
+      # - quantlib
+      # - sbt
+      # - scala
+      # - screenfetch
+      # - shyaml
+      # - ta-lib
+      - tig
+      - tmux
+      - watch
+      - wget
+      - zeromq
+      - zstd
+    state: present
+
+- name: Install "core" packages (casks)
+  community.general.homebrew_cask:
+    name:
+      - angry-ip-scanner
+      - launchcontrol
+    state: present

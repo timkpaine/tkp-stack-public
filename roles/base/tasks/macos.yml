@@ -7,33 +7,23 @@
     name:
       - autoconf
       - automake
-      - bat
-      - boost
+      # - boost
+      - brotli
       - cairo
       - clang-format
       - cmake
       - curl
       - dos2unix
-      - duf
-      - flatbuffers
-      - fzf
+      # - flatbuffers
       - gcc
-      - gdb
-      - geckodriver
+      - gh
       - git
       - git-lfs
-      - graphviz
-      - gtop
-      - hexyl
-      - highlight
-      - hiredis
+      - hdf5
       - htop
       - jemalloc
       - jsoncpp
-      - kafka
       - krb5
-      - kubernetes-cli
-      - launchcontrol
       - libev
       - libevent
       - libffi
@@ -43,10 +33,12 @@
       - librdkafka
       - libsodium
       - libuv
+      - lunchy
       - lz4
-      - multimarkdown
       - ncurses
       - nginx
+      - ninja
+      - nlohmann-json
       - nmap
       - node
       - nvm
@@ -55,33 +47,29 @@
       - openldap
       - openssl@1.1
       - pkg-config
-      - pybind11
-      - python@3.10
-      - qt
-      - quantlib
+      - podman
+      - python@3.11
       - rapidjson
       - readline
       - redis
       - ruby
       - rustup-init
-      - sbt
-      - scala
-      - screenfetch
-      - selenium-server
-      - selenium-server-standalone
       - shyaml
       - snappy
       - sqlite
-      - ta-lib
       - tbb
       - tcl-tk
-      - tig
-      - tmux
+      - telnet
       - watch
       - wget
       - zeromq
-      - zookeeper
       - zstd
+    state: present
+
+- name: Install "core" packages (casks)
+  community.general.homebrew_cask:
+    name:
+      - appcleaner
     state: present
 
 - name: Create programs directory if it does not exist

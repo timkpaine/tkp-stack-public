@@ -49,3 +49,16 @@
       </dict>
       </plist>
   become: true
+
+- name: Override code server config
+  ansible.builtin.copy:
+    dest: /etc/code-server/config.yaml
+    mode: '0644'
+    content: |
+      bind-addr: 0.0.0.0:{{ PORTS.CODESERVER_LOCAL }}
+      auth: none
+      cert: true
+      cert-host: {{ inventory_hostname }}
+  become: true
+
+-
