@@ -1,0 +1,102 @@
+---
+- name: Add the user 'postgres' with a bash shell, appending the group 'services' to the user's groups
+  ansible.builtin.user:
+    name: postgres
+    shell: /bin/bash
+    groups: services
+    append: true
+  become: true
+
+- name: Create database directory
+  ansible.builtin.file:
+    path: /var/lib/postgresql
+    state: directory
+    mode: '0700'
+    owner: postgres
+    group: services
+  become: true
+
+- name: Create a symbolic link on macOS so paths align
+  ansible.builtin.file:
+    src: /opt/homebrew/var/postgresql@{{ POSTGRES_VERSION }}
+    dest: /var/lib/postgresql/{{ POSTGRES_VERSION }}
+    owner: postgres
+    group: services
+    state: link
+  become: true
+  when: "OS == 'macOS'"
+
+- name: Create database directory
+  ansible.builtin.file:
+    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data
+    state: directory
+    mode: '0700'
+    owner: postgres
+    group: services
+    recurse: true
+  become: true
+
+- name: Check to see if database has been initialized
+  ansible.builtin.stat:
+    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/postgresql.conf
+  become: true
+  register: db_data
+
+# NOTE: this doesnt work sometimes on macOS, run manually
+- name: Initialize db files
+  ansible.builtin.shell: |
+    initdb -D /var/lib/postgresql/{{ POSTGRES_VERSION }}/data -U postgres
+  args:
+    executable: /bin/bash
+  become: true
+  become_user: postgres
+  when: not db_data.stat.exists
+  failed_when: false
+
+- name: Setup postgres port
+  ansible.builtin.lineinfile:
+    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/postgresql.conf
+    regexp: '^port ='
+    line: "port = {{ PORTS.POSTGRES }}"
+    create: true
+  become: true
+
+- name: Configure postgres access
+  ansible.builtin.blockinfile:
+    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/pg_hba.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    block: |
+      host all all 127.0.0.1/8       ident
+      host all all 127.0.0.1/8       md5
+      host all all {{ DOMAINS.VPN }}/8 md5
+  become: true
+
+- name: Create etc database directory
+  ansible.builtin.file:
+    path: /etc/postgresql/{{ POSTGRES_VERSION }}
+    state: directory
+    mode: '0700'
+    recurse: true
+    owner: postgres
+    group: services
+  become: true
+
+- name: Create another symbolic link to bridge different installation paths
+  ansible.builtin.file:
+    src: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data
+    dest: /etc/postgresql/{{ POSTGRES_VERSION }}/data
+    owner: postgres
+    group: services
+    state: link
+  become: true
+
+# NOTE: for refence
+# - name: Start db
+#   ansible.builtin.shell: |
+#     pg_ctl -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -l /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/logfile start
+#     sleep 5
+#     createdb -O airflow airflow -E utf-8 -U airflow -p 8094
+#   when: "OS == 'EL' and db_data.rc != 0"
+#   args:
+#     executable: /bin/bash
+#   become_user: postgres

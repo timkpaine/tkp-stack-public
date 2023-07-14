@@ -1,0 +1,16 @@
+---
+- name: Add the user 'airflow' with a bash shell, appending the group 'services' to the user's groups
+  ansible.builtin.user:
+    name: airflow
+    shell: /bin/bash
+    groups: services
+    append: true
+  become: true
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"

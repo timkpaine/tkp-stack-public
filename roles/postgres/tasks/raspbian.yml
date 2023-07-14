@@ -1,0 +1,13 @@
+---
+- name: Install postgres
+  ansible.builtin.apt:
+    name:
+      - postgresql-{{ POSTGRES_VERSION }}
+      - postgresql-client-{{ POSTGRES_VERSION }}
+    state: present
+  when: "OS == 'Raspbian'"
+
+- name: Copy postgres files over
+  ansible.builtin.command: cp -r /usr/lib/postgresql/{{ POSTGRES_VERSION }}/* /usr/local/
+  become: true
+  when: "OS == 'Raspbian'"

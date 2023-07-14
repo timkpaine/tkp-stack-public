@@ -1,0 +1,18 @@
+---
+- name: Run Firewalld
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: firewalld
+
+- name: Permit traffic in default zone for https service
+  ansible.posix.firewalld:
+    service: https
+    permanent: true
+    state: enabled
+
+- name: Disable traffic in default zone for http service
+  ansible.posix.firewalld:
+    service: http
+    permanent: true
+    state: enabled

@@ -1,7 +1,7 @@
 ---
-- name: Include EL specific tasks
-  ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'EL'"
+- name: Include generic linux tasks
+  ansible.builtin.include_tasks: linux.yml
+  when: "OS != 'macOS'"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
@@ -10,3 +10,7 @@
 - name: Include Raspbian specific tasks
   ansible.builtin.include_tasks: raspbian.yml
   when: "OS == 'Raspbian'"
+
+- name: Reload process
+  ansible.builtin.include_tasks: run.yml
+  when: "OS != 'macOS'"

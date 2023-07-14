@@ -35,5 +35,7 @@
   community.general.homebrew_cask:
     name:
       - angry-ip-scanner
+      - keka
       - launchcontrol
+      - numi
     state: present

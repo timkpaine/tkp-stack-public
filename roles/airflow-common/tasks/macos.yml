@@ -1,0 +1,30 @@
+---
+# - name: Install python dependencies
+#   community.general.homebrew:
+#     name:
+#       - mysql-client
+#     state: present
+
+- name: Create airflow venvs directory if it does not exist
+  ansible.builtin.file:
+    path: /var/lib/venvs/airflow
+    state: directory
+    mode: '0755'
+  when: "OS == 'macOS'"
+
+- name: Copy constraints file
+  ansible.builtin.copy:
+    src: ../config/constraints-{{ PYTHON_MACOS_VERSION}}.txt
+    dest: /var/lib/venvs/airflow
+    owner: airflow
+    group: services
+    mode: '0644'
+  become: true
+  when: "OS == 'macOS'"
+
+- name: Setup airflow virtualenv
+  ansible.builtin.pip:
+    requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
+    virtualenv: /var/lib/venvs/airflow
+  become: true
+  when: "OS == 'macOS'"

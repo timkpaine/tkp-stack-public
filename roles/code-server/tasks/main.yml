@@ -9,6 +9,7 @@
     path: /etc/code-server
     state: directory
     mode: '0755'
+  become: true
 
 - name: Setup code server config
   ansible.builtin.copy:

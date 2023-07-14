@@ -1,0 +1,11 @@
+---
+- name: Install rustup-init package
+  community.general.homebrew:
+    name:
+      - rustup-init
+    state: present
+
+- name: Run rustup-init
+  ansible.builtin.command:
+    cmd: rustup-init
+    creates: "/Users/timkpaine/.cargo/bin/rustup"

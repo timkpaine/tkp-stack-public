@@ -1,0 +1,12 @@
+---
+- name: Restart Firewalld
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    name: firewalld
+
+- name: Restart resolution
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    name: systemd-resolved

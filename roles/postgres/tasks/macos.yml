@@ -1,0 +1,6 @@
+---
+- name: Install postgresql dependencies
+  community.general.homebrew:
+    name:
+      - postgresql@{{ POSTGRES_VERSION }}
+    state: present

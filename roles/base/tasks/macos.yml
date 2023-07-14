@@ -83,3 +83,23 @@
     path: /Users/timkpaine/Developer/projects
     state: directory
     mode: '0755'
+
+# NOTE: for intel macs, you'll need to symlink around
+- name: Ensure homebrew in path
+  ansible.builtin.lineinfile:
+    path: /etc/paths
+    line: "/opt/homebrew/bin"
+  become: true
+
+- name: Create /etc/profile.d directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/profile.d/
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Add homebrew bin dir to system-wide $PATH.
+  ansible.builtin.copy:
+    dest: /etc/profile.d/homebrew.sh
+    content: 'PATH=$PATH:/opt/homebrew/bin'
+  become: true
