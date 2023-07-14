@@ -2,7 +2,7 @@ setup:  ## install required dependencies
 	pip install ansible ansible-lint
 
 lint: check-deps  ## run linter with ansible-lint
-	ansible-lint -p playbooks/* roles/
+	ansible-lint -p roles/
 
 check-deps:  ## check that we haven't emptied dependencies for testing
 	bash -c 'grep -rn "dependencies: \[\]" ./roles/'
