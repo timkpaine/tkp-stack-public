@@ -11,6 +11,6 @@
   ansible.builtin.include_tasks: raspbian.yml
   when: "OS == 'Raspbian'"
 
-- name: Reload process
-  ansible.builtin.include_tasks: run.yml
+- name: Setup and run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
   when: "OS != 'macOS'"

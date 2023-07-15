@@ -3,7 +3,8 @@
   ansible.builtin.user:
     name: postgres
     shell: /bin/bash
-    groups: services
+    group: staff
+    groups: services,staff
     append: true
   become: true
 
@@ -19,7 +20,7 @@
 - name: Create a symbolic link on macOS so paths align
   ansible.builtin.file:
     src: /opt/homebrew/var/postgresql@{{ POSTGRES_VERSION }}
-    dest: /var/lib/postgresql/{{ POSTGRES_VERSION }}
+    dest: /var/lib/pgsql/{{ POSTGRES_VERSION }}
     owner: postgres
     group: services
     state: link
@@ -28,7 +29,7 @@
 
 - name: Create database directory
   ansible.builtin.file:
-    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data
     state: directory
     mode: '0700'
     owner: postgres
@@ -38,14 +39,14 @@
 
 - name: Check to see if database has been initialized
   ansible.builtin.stat:
-    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/postgresql.conf
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/postgresql.conf
   become: true
   register: db_data
 
 # NOTE: this doesnt work sometimes on macOS, run manually
 - name: Initialize db files
   ansible.builtin.shell: |
-    initdb -D /var/lib/postgresql/{{ POSTGRES_VERSION }}/data -U postgres
+    initdb -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/data -U postgres
   args:
     executable: /bin/bash
   become: true
@@ -55,7 +56,7 @@
 
 - name: Setup postgres port
   ansible.builtin.lineinfile:
-    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/postgresql.conf
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/postgresql.conf
     regexp: '^port ='
     line: "port = {{ PORTS.POSTGRES }}"
     create: true
@@ -63,7 +64,7 @@
 
 - name: Configure postgres access
   ansible.builtin.blockinfile:
-    path: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data/pg_hba.conf
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/pg_hba.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     block: |
       host all all 127.0.0.1/8       ident
@@ -83,7 +84,7 @@
 
 - name: Create another symbolic link to bridge different installation paths
   ansible.builtin.file:
-    src: /var/lib/postgresql/{{ POSTGRES_VERSION }}/data
+    src: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data
     dest: /etc/postgresql/{{ POSTGRES_VERSION }}/data
     owner: postgres
     group: services

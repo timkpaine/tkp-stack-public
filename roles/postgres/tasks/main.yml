@@ -6,7 +6,8 @@
   ansible.builtin.user:
     name: postgres
     shell: /bin/bash
-    groups: services
+    group: staff
+    groups: services,staff
     append: true
   become: true
 
@@ -29,6 +30,6 @@
 - name: Configure databases
   ansible.builtin.include_tasks: configure.yml
 
-- name: Setup systemd running (linux)
-  ansible.builtin.include_tasks: run.yml
+- name: Run postgres with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
   when: "OS != 'macOS'"

@@ -3,7 +3,8 @@
   ansible.builtin.user:
     name: airflow
     shell: /bin/bash
-    groups: services
+    group: staff
+    groups: services,staff
     append: true
   become: true
 
@@ -14,3 +15,51 @@
 - name: Include macOS specific tasks
   ansible.builtin.include_tasks: macos.yml
   when: "OS == 'macOS'"
+
+- name: Create airflow db directory
+  ansible.builtin.file:
+    path: /var/lib/airflow
+    state: directory
+    mode: '0700'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Copy airflow config file into place
+  ansible.builtin.copy:
+    src: ../config/airflow.cfg
+    dest: /var/lib/airflow/airflow.cfg
+    mode: '0755'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Copy webserver config file into place
+  ansible.builtin.copy:
+    src: ../config/webserver_config.py
+    dest: /var/lib/airflow/webserver_config.py
+    mode: '0600'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Set SQL port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:PORTS.AIRFLOW_POSTGRES/airflow"
+    line: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:{{ PORTS.AIRFLOW_POSTGRES }}/airflow"
+  become: true
+
+- name: Set webserver port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "web_server_port = PORTS.AIRFLOW_WEBSERVER"
+    line: "web_server_port = {{ PORTS.AIRFLOW_WEBSERVER }}"
+  become: true
+
+- name: Set dask port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "cluster_address = 127.0.0.1:PORTS.DASK_SCHEDULER"
+    line: "cluster_address = 127.0.0.1:{{ PORTS.DASK_SCHEDULER }}"
+  become: true

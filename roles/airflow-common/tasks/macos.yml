@@ -9,22 +9,24 @@
   ansible.builtin.file:
     path: /var/lib/venvs/airflow
     state: directory
+    owner: airflow
+    group: services
     mode: '0755'
-  when: "OS == 'macOS'"
+  become: true
 
 - name: Copy constraints file
   ansible.builtin.copy:
     src: ../config/constraints-{{ PYTHON_MACOS_VERSION}}.txt
-    dest: /var/lib/venvs/airflow
+    dest: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
     owner: airflow
     group: services
     mode: '0644'
   become: true
-  when: "OS == 'macOS'"
+  become_user: airflow
 
 - name: Setup airflow virtualenv
   ansible.builtin.pip:
     requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
     virtualenv: /var/lib/venvs/airflow
   become: true
-  when: "OS == 'macOS'"
+  become_user: airflow

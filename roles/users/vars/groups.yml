@@ -3,4 +3,5 @@ GROUPS:
   - developers
   - admin
   - services
-  - sudo
+  - staff  # mac
+  - sudo  # ubuntu

@@ -1,10 +1,11 @@
 ---
 dependencies:
   # - role: base
-  # - role: python
+  # - role: postgres
+  # - role: airflow-common
 
 galaxy_info:
-  role_name: airflow_common
+  role_name: airflow_db
   author: timkpaine
   description: Install database for airflow
   license: AGPL-3.0
