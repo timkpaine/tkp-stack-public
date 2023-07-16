@@ -1,7 +1,4 @@
 ---
-############
-# el steps #
-############
 - name: Install certbot
   ansible.builtin.pip:
     name:
@@ -9,9 +6,6 @@
   become: true
   when: "OS == 'EL'"
 
-################
-# Ubuntu steps #
-################
 - name: Install the certbot packages
   ansible.builtin.apt:
     name:
@@ -19,14 +13,3 @@
       - python3-certbot-nginx
     state: present
   when: "OS == 'Ubuntu'"
-
-# https://github.com/conda-forge/miniforge#mambaforge
-
-# lin 64
-# https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Linux-x86_64.sh
-
-# mac 64 x86
-# https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-x86_64.sh
-
-# mac 64 arm
-# https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-arm64.sh

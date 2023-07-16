@@ -2,7 +2,7 @@
 - name: Pull version variable
   ansible.builtin.include_vars: version.yml
 
-- name: Add the user 'postgres' with a bash shell, appending the group 'services' to the user's groups
+- name: Add the user 'postgres'
   ansible.builtin.user:
     name: postgres
     shell: /bin/bash

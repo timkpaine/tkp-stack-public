@@ -7,5 +7,5 @@
 
 - name: Run rustup-init
   ansible.builtin.command:
-    cmd: rustup-init
+    cmd: rustup-init -y
     creates: "/Users/timkpaine/.cargo/bin/rustup"

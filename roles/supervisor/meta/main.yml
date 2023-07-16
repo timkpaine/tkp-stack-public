@@ -1,12 +1,11 @@
 ---
 dependencies:
-  - role: base
   - role: python
 
 galaxy_info:
-  role_name: airflow_common
+  role_name: supervisor
   author: timkpaine
-  description: Install database for airflow
+  description: Install the supervisor python package
   license: AGPL-3.0
   min_ansible_version: "2.12"
   platforms:

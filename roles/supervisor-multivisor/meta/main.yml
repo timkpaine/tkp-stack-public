@@ -1,12 +1,11 @@
 ---
 dependencies:
-  - role: base
-  - role: python
+  - role: supervisor
 
 galaxy_info:
-  role_name: airflow_common
+  role_name: supervisor_multivisor
   author: timkpaine
-  description: Install database for airflow
+  description: Install the multivisor supervisor UI
   license: AGPL-3.0
   min_ansible_version: "2.12"
   platforms:
@@ -17,6 +16,6 @@ galaxy_info:
         - "9"
     - name: Raspbian
     - name: Ubuntu
-    - name: macOS
+    - name: macos
   galaxy_tags:
     - development

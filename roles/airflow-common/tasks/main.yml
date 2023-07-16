@@ -1,5 +1,5 @@
 ---
-- name: Add the user 'airflow' with a bash shell, appending the group 'services' to the user's groups
+- name: Add the user 'airflow'
   ansible.builtin.user:
     name: airflow
     shell: /bin/bash

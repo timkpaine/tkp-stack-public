@@ -24,3 +24,11 @@
     path: /etc/sudoers
     line: "Defaults    secure_path = /sbin:/bin:/usr/sbin:/usr/local/bin:/usr/bin"
   become: true
+  when: "OS == 'EL' or OS == 'Ubuntu'"
+
+- name: Configure default sudo path
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "Defaults    secure_path = /opt/homebrew/bin:/sbin:/bin:/usr/sbin:/usr/local/bin:/usr/bin"
+  become: true
+  when: "OS == 'macOS'"

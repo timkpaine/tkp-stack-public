@@ -16,5 +16,6 @@ galaxy_info:
         - "9"
     - name: Raspbian
     - name: Ubuntu
+    - name: macOS
   galaxy_tags:
     - development

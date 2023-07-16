@@ -1,0 +1,19 @@
+---
+- name: Create dask config directory
+  ansible.builtin.file:
+    path: /etc/dask
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true
+
+- name: Copy config file
+  ansible.builtin.copy:
+    src: ../config/distributed.yaml
+    dest: /etc/dask/distributed.yaml
+    owner: dask
+    group: services
+    mode: '0644'
+  become: true
+  become_user: dask

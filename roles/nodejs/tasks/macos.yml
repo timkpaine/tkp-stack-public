@@ -1,8 +1,8 @@
 ---
-- name: Install nodejs@19 packages
+- name: Install node packages
   community.general.homebrew:
     name:
-      - node@19
+      - node
     state: present
 
 - name: Install latest yarn

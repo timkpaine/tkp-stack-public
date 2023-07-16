@@ -33,3 +33,11 @@
 # NOTE: we don't start code-server, we can run it ad-hoc so its not always-on
 # NOTE: we don't configure code-server with auth, locally its behind firewall
 # and remotely its behind nginx SSO
+
+- name: Run code-server with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Run code-server with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"

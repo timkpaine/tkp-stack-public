@@ -1,0 +1,26 @@
+---
+- name: Add systemd service for code-server
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/code-server@.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Code-server for %i
+      After=network.target
+
+      [Service]
+      User=%i
+      WorkingDirectory=/home/%i
+      Restart=always
+      ExecStart=/usr/bin/code-server --config /etc/code-server/config.yaml
+
+      [Install]
+      WantedBy=default.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+# NOTE: don't start on ubuntu

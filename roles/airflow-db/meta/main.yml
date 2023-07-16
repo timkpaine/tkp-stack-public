@@ -1,8 +1,8 @@
 ---
 dependencies:
-  # - role: base
-  # - role: postgres
-  # - role: airflow-common
+  - role: base
+  - role: postgres
+  - role: airflow-common
 
 galaxy_info:
   role_name: airflow_db
