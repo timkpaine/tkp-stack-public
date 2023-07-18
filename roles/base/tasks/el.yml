@@ -1,0 +1,45 @@
+---
+############
+# el steps #
+############
+- name: Install the 'Development tools' package group
+  ansible.builtin.dnf:
+    name: "@Development tools"
+    state: present
+
+- name: Install "core" packages
+  ansible.builtin.dnf:
+    name:
+      - autoconf
+      - automake
+      - boost-devel
+      - cmake
+      - curl
+      - cyrus-sasl-plain
+      - git224
+      - git-lfs
+      - epel-release
+      - fail2ban
+      - firewalld
+      - htop
+      - java-11-openjdk-devel
+      - krb5-server
+      - krb5-workstation
+      - libmnl-devel
+      - lm_sensors
+      - lsof
+      - make
+      - MySQL-python
+      - nc
+      - net-tools
+      - pam_krb5
+      - pkgconfig
+      - screen
+      - tmux
+      - uuid-devel
+      - wget
+      - vim
+      - yum-utils
+      - zlib-devel
+      # - https://centos7.iuscommunity.org/ius-release.rpm  # common
+    state: present

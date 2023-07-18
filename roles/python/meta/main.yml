@@ -1,0 +1,21 @@
+---
+dependencies:
+  - role: base
+
+galaxy_info:
+  role_name: python
+  author: timkpaine
+  description: Install vanilla python
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Raspbian
+    - name: Ubuntu
+    - name: macOS
+  galaxy_tags:
+    - development

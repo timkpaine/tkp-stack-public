@@ -1,0 +1,11 @@
+---
+- name: Install podman
+  ansible.builtin.apt:
+    name: podman
+    state: present
+
+- name: Run podman
+  ansible.builtin.systemd:
+    name: podman
+    state: started
+    enabled: true

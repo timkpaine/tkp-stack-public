@@ -1,0 +1,28 @@
+---
+# May no longer work
+# - name: Install postgresql repo
+#   ansible.builtin.dnf:
+#     name:
+#       - https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+#     state: present
+#   when: "OS == 'EL'"
+
+# - name: Install postgres
+#   ansible.builtin.dnf:
+#     name:
+#       - postgresql{{ POSTGRES_VERSION }}
+#       - postgresql{{ POSTGRES_VERSION }}-server
+#     state: present
+#   when: "OS == 'EL'"
+
+# - name: Copy postgres files over
+#   ansible.builtin.command: cp -r /usr/pgsql-{{ POSTGRES_VERSION }}/* /usr/local/
+#   become: true
+#   when: "OS == 'EL'"
+
+# - name: Check to see if database has been initialized
+#   ansible.builtin.command: postgresql-{{ POSTGRES_VERSION }}-check-db-dir /var/lib/pgsql/{{ POSTGRES_VERSION }}/data
+#   become: true
+#   register: db_data
+#   failed_when: db_data.rc != 0 and db_data.rc != 1
+#   when: "OS == 'EL'"

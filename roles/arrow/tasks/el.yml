@@ -1,0 +1,16 @@
+---
+- name: Add repository for arrow
+  ansible.builtin.dnf:
+    name:
+      - https://apache.jfrog.io/artifactory/arrow/centos/7/apache-arrow-release-latest.rpm
+    state: present
+
+- name: Install arrow packages
+  ansible.builtin.dnf:
+    name:
+      - arrow-devel
+      - arrow-glib-devel
+      - arrow-dataset-devel
+      - parquet-devel
+      - parquet-glib-devel
+    state: present

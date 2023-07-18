@@ -1,0 +1,35 @@
+---
+- name: Pull version variable
+  ansible.builtin.include_vars: version.yml
+
+- name: Add the user 'postgres'
+  ansible.builtin.user:
+    name: postgres
+    shell: /bin/bash
+    group: staff
+    groups: services,staff
+    append: true
+  become: true
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include Rasbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
+
+- name: Configure databases
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Run postgres with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

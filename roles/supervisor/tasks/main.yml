@@ -1,0 +1,28 @@
+---
+- name: Add the user 'supervisor'
+  ansible.builtin.user:
+    name: supervisor
+    shell: /bin/bash
+    group: staff
+    groups: services,staff
+    append: true
+  become: true
+
+- name: Configure supervisor
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
+
+- name: Run supervisor with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Run supervisor with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"

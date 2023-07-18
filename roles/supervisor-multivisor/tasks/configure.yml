@@ -1,0 +1,11 @@
+---
+- name: Setup multivisor config
+  ansible.builtin.copy:
+    dest: /etc/supervisor/multivisor.conf
+    mode: '0755'
+    owner: supervisor
+    group: services
+    content: |
+      [global]
+      name=multivisor
+  become: true

@@ -1,0 +1,20 @@
+---
+- name: Import VS Code rpm key
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: Add VS Code repository
+  ansible.builtin.yum_repository:
+    name: Visual-Studio-Code
+    description: Visual Studio Code Repository
+    baseurl: https://packages.microsoft.com/yumrepos/vscode
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: Install VS Code
+  ansible.builtin.dnf:
+    name:
+      - code
+    state: present

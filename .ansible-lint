@@ -1,0 +1,10 @@
+---
+# .ansible-lint
+use_default_rules: true
+skip_list:
+  - jinja[spacing]
+  - no-changed-when
+  - risky-file-permissions
+  - schema[meta]
+  - var-naming
+  - yaml[line-length]

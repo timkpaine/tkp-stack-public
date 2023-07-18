@@ -1,0 +1,14 @@
+---
+- name: Pull version variable
+  ansible.builtin.include_vars: version.yml
+
+- name: Configure airflow db
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Setup and run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Setup and run with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"

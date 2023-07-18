@@ -1,0 +1,81 @@
+---
+- name: Create airflow directory
+  ansible.builtin.file:
+    path: /var/lib/airflow
+    state: directory
+    mode: '0775'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Create airflow DAGs directory
+  ansible.builtin.file:
+    path: /var/lib/airflow/dags
+    state: directory
+    mode: '0777'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Create airflow log directory
+  ansible.builtin.file:
+    path: /var/log/airflow
+    state: directory
+    mode: '0775'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Create airflow scheduler log directory
+  ansible.builtin.file:
+    path: /var/log/airflow/scheduler
+    state: directory
+    mode: '0775'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Copy airflow config file into place
+  ansible.builtin.copy:
+    src: ../config/airflow.cfg
+    dest: /var/lib/airflow/airflow.cfg
+    mode: '0755'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Copy webserver config file into place
+  ansible.builtin.copy:
+    src: ../config/webserver_config.py
+    dest: /var/lib/airflow/webserver_config.py
+    mode: '0600'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Set SQL port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:PORTS_AIRFLOW_POSTGRES/airflow"
+    line: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:{{ PORTS_AIRFLOW_POSTGRES }}/airflow"
+  become: true
+
+- name: Set webserver port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "web_server_port = PORTS_AIRFLOW_WEBSERVER"
+    line: "web_server_port = {{ PORTS_AIRFLOW_WEBSERVER }}"
+  become: true
+
+- name: Set dask port in airflow config
+  ansible.builtin.lineinfile:
+    path: /var/lib/airflow/airflow.cfg
+    search_string: "cluster_address = 127.0.0.1:PORTS_DASK_SCHEDULER"
+    line: "cluster_address = 127.0.0.1:{{ PORTS_DASK_SCHEDULER }}"
+  become: true
+
+- name: Set AIRFLOW_HOME for any logins
+  ansible.builtin.copy:
+    dest: /etc/profile.d/airflow.sh
+    content: 'export AIRFLOW_HOME=/var/lib/airflow'
+  become: true

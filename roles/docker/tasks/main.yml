@@ -1,0 +1,29 @@
+---
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include MacOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
+
+- name: Add prune script to crontab (linux)
+  ansible.builtin.lineinfile:
+    path: /etc/crontab
+    search_string: "0 3 * * *"
+    line: "0 3 * * * root docker system prune -a --volumes"
+    create: true
+  when: "OS != 'macOS'"
+
+- name: Add prune script to crontab (mac)
+  ansible.builtin.lineinfile:
+    path: /private/var/at/tabs/timkpaine
+    search_string: "0 3 * * *"
+    line: "0 3 * * * sudo docker system prune -a --volumes"
+    create: true
+  become: true
+  when: "OS == 'macOS'"

@@ -1,0 +1,62 @@
+---
+- name: Add launch agent for code-server
+  ansible.builtin.copy:
+    dest: /Library/LaunchAgents/timkpaine.code-server.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>timkpaine</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.code-server</string>
+        <key>LimitLoadToSessionType</key>
+        <array>
+          <string>Aqua</string>
+          <string>Background</string>
+          <string>LoginWindow</string>
+          <string>StandardIO</string>
+          <string>System</string>
+        </array>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/opt/homebrew/opt/code-server/bin/code-server</string>
+          <string>--config</string>
+          <string>/etc/code-server/config.yaml</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/opt/homebrew/var/log/code-server.log</string>
+        <key>StandardOutPath</key>
+        <string>/opt/homebrew/var/log/code-server.log</string>
+        <key>WorkingDirectory</key>
+        <string>/Users/timkpaine/</string>
+      </dict>
+      </plist>
+  become: true
+
+- name: Override code server config
+  ansible.builtin.copy:
+    dest: /etc/code-server/config.yaml
+    mode: '0644'
+    content: |
+      bind-addr: 0.0.0.0:{{ PORTS_CODESERVER_LOCAL }}
+      auth: none
+      cert: true
+      cert-host: {{ inventory_hostname }}
+  become: true
+
+- name: Remove original launchagent file
+  ansible.builtin.file:
+    path: ~/Library/LaunchAgents/homebrew.mxcl.code-server.plist
+    state: absent
+
+- name: Start code-server with launchd
+  community.general.launchd:
+    name: timkpaine.code-server
+    state: started

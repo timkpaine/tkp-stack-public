@@ -1,0 +1,15 @@
+---
+- name: Install certbot
+  ansible.builtin.pip:
+    name:
+      - certbot
+  become: true
+  when: "OS == 'EL'"
+
+- name: Install the certbot packages
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+  when: "OS == 'Ubuntu'"

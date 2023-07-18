@@ -1,0 +1,55 @@
+---
+- name: Copy airflow-postgresql service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-postgresql.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=PostgreSQL database server for airflow
+      After=network.target postgresql-{{ POSTGRES_VERSION }}.service
+      Wants=network.target postgresql-{{ POSTGRES_VERSION }}.service
+
+      [Service]
+      Type=forking
+
+      User=postgres
+      Group=postgres
+
+      # Port number for server to listen on
+      Environment=PGPORT={{ PORTS_AIRFLOW_POSTGRES }}
+
+      # Location of database directory
+      Environment=PGDATA=/var/lib/pgsql/14/airflow_data
+
+      # Where to send early-startup messages from the server (before the logging
+      # options of postgresql.conf take effect)
+      # This is normally controlled by the global default set by systemd
+      # StandardOutput=syslog
+
+      # Disable OOM kill on the postmaster
+      OOMScoreAdjust=-1000
+
+      ExecStartPre=/usr/local/bin/postgresql-14-check-db-dir ${PGDATA}
+      ExecStart=/usr/local/bin/pg_ctl start -D ${PGDATA} -s -o "-p ${PGPORT}" -w -t 300
+      ExecStop=/usr/local/bin/pg_ctl stop -D ${PGDATA} -s -m fast
+      ExecReload=/usr/local/bin/pg_ctl reload -D ${PGDATA} -s
+
+      # Give a reasonable amount of time for the server to start up/shut down
+      TimeoutSec=300
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run airflow-postgresql
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: airflow-postgresql

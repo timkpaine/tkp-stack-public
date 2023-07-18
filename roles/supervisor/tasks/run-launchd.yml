@@ -1,0 +1,39 @@
+---
+- name: Add launch daemon for supervisor
+  ansible.builtin.copy:
+    dest: /Library/LaunchDaemons/timkpaine.supervisor.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>supervisor</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.supervisor</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/var/lib/venvs/supervisor/bin/supervisord</string>
+          <string>--configuration</string>
+          <string>/etc/supervisor/supervisord.conf</string>
+          <string>--nodaemon</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/var/log/supervisor/supervisord_stderr.log</string>
+        <key>StandardOutPath</key>
+        <string>/var/log/supervisor/supervisord_stdout.log</string>
+        <key>WorkingDirectory</key>
+        <string>/var/lib/supervisor/</string>
+      </dict>
+      </plist>
+  become: true
+
+- name: Start supervisor with launchd
+  community.general.launchd:
+    name: timkpaine.supervisor
+    state: started

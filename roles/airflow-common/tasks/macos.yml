@@ -1,0 +1,41 @@
+---
+# - name: Install python dependencies
+#   community.general.homebrew:
+#     name:
+#       - mysql-client
+#     state: present
+
+- name: Create airflow venvs directory if it does not exist
+  ansible.builtin.file:
+    path: /var/lib/venvs/airflow
+    state: directory
+    owner: airflow
+    group: services
+    mode: '0755'
+  become: true
+
+- name: Copy constraints file
+  ansible.builtin.copy:
+    src: ../config/constraints-{{ PYTHON_MACOS_VERSION}}.txt
+    dest: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
+    owner: airflow
+    group: services
+    mode: '0644'
+  become: true
+  become_user: airflow
+
+- name: Setup airflow virtualenv
+  ansible.builtin.pip:
+    requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
+    virtualenv: /var/lib/venvs/airflow
+  become: true
+  become_user: airflow
+
+- name: Set AIRFLOW_HOME for user
+  ansible.builtin.blockinfile:
+    path: /Users/airflow/.bash_profile
+    block: |
+      export AIRFLOW_HOME=/var/lib/airflow
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
+  become: true
+  become_user: airflow

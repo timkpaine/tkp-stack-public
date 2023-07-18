@@ -1,0 +1,6 @@
+---
+- name: Install python packages
+  community.general.homebrew:
+    name:
+      - python@{{ PYTHON_MACOS_VERSION }}
+    state: present
