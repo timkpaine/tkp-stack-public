@@ -1,0 +1,27 @@
+---
+- name: Check to see if systemd assets are still around
+  ansible.builtin.stat:
+    path: /lib/systemd/system/airflow-postgresql.service
+  register: db_service
+  become: true
+
+- name: Stop airflow-postgresql
+  ansible.builtin.systemd:
+    state: stopped
+    enabled: false
+    name: airflow-postgresql
+  become: true
+  when: db_service.stat is defined and db_service.stat.exists
+
+- name: Delete airflow-postgresql service
+  ansible.builtin.file:
+    path: /lib/systemd/system/airflow-postgresql.service
+    state: absent
+  become: true
+  when: db_service.stat is defined and db_service.stat.exists
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+  become: true

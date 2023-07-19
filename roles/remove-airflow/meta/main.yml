@@ -1,12 +1,10 @@
 ---
-dependencies:
-  - role: base
-  - role: python
+dependencies: []
 
 galaxy_info:
-  role_name: airflow_common
+  role_name: remove_airflow
   author: timkpaine
-  description: Install prerequisites and virtualenv for airflow
+  description: Uninstall and remove Apache Airflow
   license: AGPL-3.0
   min_ansible_version: "2.12"
   platforms:
@@ -17,7 +15,6 @@ galaxy_info:
         - "9"
     - name: Raspbian
     - name: Ubuntu
-
     - name: macOS
   galaxy_tags:
     - development

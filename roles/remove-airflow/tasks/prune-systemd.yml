@@ -1,0 +1,47 @@
+---
+- name: Check to see if systemd assets are still around
+  ansible.builtin.stat:
+    path: /lib/systemd/system/airflow-scheduler.service
+  register: scheduler_service
+  become: true
+
+- name: Check to see if systemd assets are still around
+  ansible.builtin.stat:
+    path: /lib/systemd/system/airflow-webserver.service
+  register: webserver_service
+  become: true
+
+- name: Stop airflow-scheduler
+  ansible.builtin.systemd:
+    state: stopped
+    enabled: false
+    name: airflow-scheduler
+  become: true
+  when: scheduler_service.stat is defined and scheduler_service.stat.exists
+
+- name: Stop airflow-webserver
+  ansible.builtin.systemd:
+    state: stopped
+    enabled: false
+    name: airflow-webserver
+  become: true
+  when: webserver_service.stat is defined and webserver_service.stat.exists
+
+- name: Remove airflow-webserver service
+  ansible.builtin.file:
+    path: /lib/systemd/system/airflow-webserver.service
+    state: absent
+  become: true
+  when: webserver_service.stat is defined and webserver_service.stat.exists
+
+- name: Remove airflow-scheduler service
+  ansible.builtin.file:
+    path: /lib/systemd/system/airflow-scheduler.service
+    state: absent
+  become: true
+  when: scheduler_service.stat is defined and scheduler_service.stat.exists
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true

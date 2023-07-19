@@ -1,0 +1,8 @@
+---
+- name: Stop and delete airflow scheduler/webserver from systemd
+  ansible.builtin.include_tasks: prune-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Stop and delete airflow scheduler/webserver from launchd
+  ansible.builtin.include_tasks: prune-launchd.yml
+  when: "OS == 'macOS'"
