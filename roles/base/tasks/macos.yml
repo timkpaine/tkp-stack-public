@@ -1,7 +1,4 @@
 ---
-#############
-# osx steps #
-#############
 - name: Install "core" packages
   community.general.homebrew:
     name:

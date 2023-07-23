@@ -1,0 +1,8 @@
+---
+- name: Install "user" packages
+  ansible.builtin.dnf:
+    name:
+      - golang
+      - screen
+      - tmux
+    state: present

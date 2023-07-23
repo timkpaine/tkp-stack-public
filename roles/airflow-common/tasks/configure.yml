@@ -37,41 +37,306 @@
 
 - name: Copy airflow config file into place
   ansible.builtin.copy:
-    src: ../config/airflow.cfg
     dest: /var/lib/airflow/airflow.cfg
     mode: '0755'
     owner: airflow
     group: services
+    content: |
+      [core]
+      {% raw %}
+      dags_folder = /var/lib/airflow/dags
+      base_log_folder = /var/log/airflow
+      remote_logging = False
+      remote_log_conn_id =
+      remote_base_log_folder =
+      encrypt_s3_logs = False
+      logging_level = INFO
+      # Logging level for Flask-appbuilder UI
+      fab_logging_level = WARN
+      logging_config_class =
+      colored_console_log = True
+      colored_log_format = [%%(blue)s%%(asctime)s%%(reset)s] {%%(blue)s%%(filename)s:%%(reset)s%%(lineno)d} %%(log_color)s%%(levelname)s%%(reset)s - %%(log_color)s%%(message)s%%(reset)s
+      colored_formatter_class = airflow.utils.log.colored_log.CustomTTYColoredFormatter
+      log_format = [%%(asctime)s] {%%(filename)s:%%(lineno)d} %%(levelname)s - %%(message)s
+      simple_log_format = %%(asctime)s %%(levelname)s - %%(message)s
+      log_filename_template = {{ ti.dag_id }}/{{ ti.task_id }}/{{ ts }}/{{ try_number }}.log
+      log_processor_filename_template = {{ filename }}.log
+      dag_processor_manager_log_location = /var/log/airflow/dag_processor_manager.log
+      task_log_reader = task
+      # If using IP address as hostname is preferred, use value ``airflow.utils.net:get_host_ip_address``
+      hostname_callable = socket:getfqdn
+      {% endraw %}
+      default_timezone = {{ AIRFLOW_TIMEZONE }}
+      executor = DaskExecutor
+      # SequentialExecutor, LocalExecutor, CeleryExecutor, DaskExecutor, KubernetesExecutor
+      # sql_alchemy_conn = sqlite:////var/lib/airflow/airflow.db
+      sql_alchemy_conn = postgresql://airflow:airflow@{{ DOMAINS_AIRFLOW_POSTGRES }}:{{ PORTS_AIRFLOW_POSTGRES }}/airflow
+      sql_engine_encoding = utf-8
+      sql_alchemy_pool_enabled = True
+      # If SqlAlchemy should pool database connections.
+      sql_alchemy_pool_size = 0
+      # 0 indicates no limit.
+      sql_alchemy_max_overflow = 10
+      # max_overflow can be set to -1 to indicate no overflow limit;
+      sql_alchemy_pool_recycle = 1800
+      sql_alchemy_pool_pre_ping = True
+      sql_alchemy_schema =
+      parallelism = 32
+      # max concurrent task instances
+      dag_concurrency = 16
+      dags_are_paused_at_creation = True
+      max_active_runs_per_dag = 16
+      load_examples = False
+      load_default_connections = False
+      plugins_folder = /var/lib/airflow/plugins
+      fernet_key = {{ AIRFLOW_FERNET_KEY }}
+      # Secret key to save connection passwords in the db
+      donot_pickle = False
+      dagbag_import_timeout = 30
+      dag_file_processor_timeout = 50
+      task_runner = StandardTaskRunner
+      default_impersonation =
+      security = kerberos
+      secure_mode = False
+      # If set to False enables some unsecure features like Charts and Ad Hoc Queries.
+      unit_test_mode = False
+      enable_xcom_pickling = True
+      killed_task_cleanup_time = 60
+      dag_run_conf_overrides_params = False
+      worker_precheck = False
+      dag_discovery_safe_mode = True
+      default_task_retries = 0
+      store_serialized_dags = True
+      # https://airflow.apache.org/docs/stable/dag-serialization.html
+      min_serialized_dag_update_interval = 30
+      store_dag_code = %(store_serialized_dags)s
+      max_num_rendered_ti_fields_per_task = 30
+      check_slas = True
+
+      [admin]
+      hide_sensitive_variable_fields = True
+
+      [secrets]
+      backend =
+      backend_kwargs =
+
+      [cli]
+      api_client = airflow.api.client.local_client
+      endpoint_url = https://{{ DOMAINS_AIRFLOW }}:{{ PORTS_AIRFLOW_WEBSERVER }}
+
+      [debug]
+      fail_fast = False
+
+      [api]
+      auth_backend = airflow.api.auth.backend.default
+
+      [operators]
+      default_owner = airflow
+      default_cpus = 1
+      default_ram = 512
+      default_disk = 512
+      default_gpus = 0
+
+      [webserver]
+      base_url = https://{{ DOMAINS_AIRFLOW }}:{{ PORTS_AIRFLOW_WEBSERVER }}
+      default_ui_timezone = {{ AIRFLOW_TIMEZONE }}
+      web_server_host = 0.0.0.0
+      web_server_port = {{ PORTS_AIRFLOW_WEBSERVER }}
+      web_server_ssl_cert =
+      web_server_ssl_key =
+      web_server_master_timeout = 120
+      web_server_worker_timeout = 120
+      worker_refresh_batch_size = 1
+      worker_refresh_interval = 30
+      secret_key = {{ AIRFLOW_SECRET_KEY }}
+      workers = 8
+      worker_class = sync
+      access_logfile = -
+      error_logfile = -
+      # '-' means log to stderr.
+      expose_config = False
+      expose_hostname = True
+      expose_stacktrace = True
+      authenticate = False
+      # https://airflow.apache.org/security.html#web-authentication
+      filter_by_owner = False
+      owner_mode = user
+      dag_default_view = grid
+      dag_orientation = LR
+      demo_mode = False
+      log_fetch_timeout_sec = 5
+      log_fetch_delay_sec = 2
+      log_auto_tailing_offset = 30
+      log_animation_speed = 1000
+      hide_paused_dags_by_default = False
+      page_size = 100
+      rbac = False
+      navbar_color = #007A87
+      default_dag_run_display_number = 25
+      enable_proxy_fix = False
+      # Enable werkzeug ``ProxyFix`` middleware for reverse proxy
+      proxy_fix_x_for = 1
+      proxy_fix_x_proto = 1
+      proxy_fix_x_host = 1
+      proxy_fix_x_port = 1
+      proxy_fix_x_prefix = 1
+      cookie_secure = False
+      cookie_samesite =
+      default_wrap = False
+      x_frame_enabled = True
+      # analytics_tool =
+      # analytics_id =
+      update_fab_perms = True
+      force_log_out_after = 0
+      session_lifetime_days = 30
+
+      [email]
+      email_backend = airflow.utils.email.send_email_smtp
+
+      [smtp]
+      smtp_host = smtp-relay.gmail.com
+      smtp_starttls = True
+      smtp_ssl = False
+      smtp_user = {{ AIRFLOW_SMTP_USER }}
+      smtp_password = {{ AIRFLOW_SMTP_PASSWORD }}
+      smtp_port = 587
+      smtp_mail_from = {{ AIRFLOW_SMTP_USER }}
+
+      [dask]
+      cluster_address = {{ DOMAINS_DASK }}:{{ PORTS_DASK_SCHEDULER }}
+      tls_ca =
+      tls_cert =
+      tls_key =
+
+      [scheduler]
+      job_heartbeat_sec = 5
+      scheduler_heartbeat_sec = 5
+      run_duration = -1
+      # -1 indicates to run continuously (see also num_runs)
+      num_runs = -1
+      # -1 indicates unlimited number
+      processor_poll_interval = 1
+      min_file_process_interval = 0
+      dag_dir_list_interval = 300
+      print_stats_interval = 30
+      scheduler_health_check_threshold = 30
+      child_process_log_directory = /var/log/airflow/scheduler
+      scheduler_zombie_task_threshold = 300
+      catchup_by_default = False
+      max_tis_per_query = 512
+
+      # Statsd (https://github.com/etsy/statsd) integration settings
+      statsd_on = False
+      statsd_host = localhost
+      statsd_port = 8125
+      statsd_prefix = airflow
+      statsd_allow_list =
+
+      max_threads = 2
+      authenticate = False
+      use_job_schedule = True
+      allow_trigger_in_future = False
   become: true
 
 - name: Copy webserver config file into place
   ansible.builtin.copy:
-    src: ../config/webserver_config.py
     dest: /var/lib/airflow/webserver_config.py
-    mode: '0600'
+    mode: '0755'
     owner: airflow
     group: services
-  become: true
+    content: |
+      import os
 
-- name: Set SQL port in airflow config
-  ansible.builtin.lineinfile:
-    path: /var/lib/airflow/airflow.cfg
-    search_string: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:PORTS_AIRFLOW_POSTGRES/airflow"
-    line: "sql_alchemy_conn = postgresql://airflow:airflow@127.0.0.1:{{ PORTS_AIRFLOW_POSTGRES }}/airflow"
-  become: true
+      from airflow.www.fab_security.manager import AUTH_DB
+      # from airflow.www.fab_security.manager import AUTH_LDAP
+      # from airflow.www.fab_security.manager import AUTH_OAUTH
+      # from airflow.www.fab_security.manager import AUTH_OID
+      # from airflow.www.fab_security.manager import AUTH_REMOTE_USER
+      basedir = os.path.abspath(os.path.dirname(__file__))
+      WTF_CSRF_ENABLED = True
+      # Flask-WTF flag for CSRF
+      # http://flask-appbuilder.readthedocs.io/en/latest/security.html#authentication-methods
 
-- name: Set webserver port in airflow config
-  ansible.builtin.lineinfile:
-    path: /var/lib/airflow/airflow.cfg
-    search_string: "web_server_port = PORTS_AIRFLOW_WEBSERVER"
-    line: "web_server_port = {{ PORTS_AIRFLOW_WEBSERVER }}"
-  become: true
+      # The authentication type
+      # AUTH_OID : Is for OpenID
+      # AUTH_DB : Is for database
+      # AUTH_LDAP : Is for LDAP
+      # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
+      # AUTH_OAUTH : Is for OAuth
+      AUTH_TYPE = AUTH_DB
+      # AUTH_ROLE_ADMIN = 'Admin'
+      AUTH_ROLE_PUBLIC = 'Public'
+      # AUTH_USER_REGISTRATION = True
+      # RECAPTCHA_PRIVATE_KEY = PRIVATE_KEY
+      # RECAPTCHA_PUBLIC_KEY = PUBLIC_KEY
 
-- name: Set dask port in airflow config
-  ansible.builtin.lineinfile:
-    path: /var/lib/airflow/airflow.cfg
-    search_string: "cluster_address = 127.0.0.1:PORTS_DASK_SCHEDULER"
-    line: "cluster_address = 127.0.0.1:{{ PORTS_DASK_SCHEDULER }}"
+      # Config for Flask-Mail necessary for user self registration
+      # MAIL_SERVER = 'smtp.gmail.com'
+      # MAIL_USE_TLS = True
+      # MAIL_USERNAME = 'yourappemail@gmail.com'
+      # MAIL_PASSWORD = 'passwordformail'
+      # MAIL_DEFAULT_SENDER = 'sender@gmail.com'
+
+      # The default user self registration role
+      # AUTH_USER_REGISTRATION_ROLE = "Public"
+
+      # When using OAuth Auth, uncomment to setup provider(s) info
+      # Google OAuth example:
+      # OAUTH_PROVIDERS = [{
+      #   'name':'google',
+      #     'token_key':'access_token',
+      #     'icon':'fa-google',
+      #         'remote_app': {
+      #             'api_base_url':'https://www.googleapis.com/oauth2/v2/',
+      #             'client_kwargs':{
+      #                 'scope': 'email profile'
+      #             },
+      #             'access_token_url':'https://accounts.google.com/o/oauth2/token',
+      #             'authorize_url':'https://accounts.google.com/o/oauth2/auth',
+      #             'request_token_url': None,
+      #             'client_id': GOOGLE_KEY,
+      #             'client_secret': GOOGLE_SECRET_KEY,
+      #         }
+      # }]
+
+      # When using LDAP Auth, setup the ldap server
+      # AUTH_LDAP_SERVER = "ldap://ldapserver.new"
+
+      # When using OpenID Auth, uncomment to setup OpenID providers.
+      # example for OpenID authentication
+      # OPENID_PROVIDERS = [
+      #    { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
+      #    { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
+      #    { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
+      #    { 'name': 'MyOpenID', 'url': 'https://www.myopenid.com' }]
+
+      # ----------------------------------------------------
+      # Theme CONFIG
+      # ----------------------------------------------------
+      # Flask App Builder comes up with a number of predefined themes
+      # that you can use for Apache Airflow.
+      # http://flask-appbuilder.readthedocs.io/en/latest/customizing.html#changing-themes
+      # Please make sure to remove "navbar_color" configuration from airflow.cfg
+      # in order to fully utilize the theme. (or use that property in conjunction with theme)
+      # APP_THEME = "bootstrap-theme.css"  # default bootstrap
+      # APP_THEME = "amelia.css"
+      # APP_THEME = "cerulean.css"
+      # APP_THEME = "cosmo.css"
+      # APP_THEME = "cyborg.css"
+      # APP_THEME = "darkly.css"
+      # APP_THEME = "flatly.css"
+      # APP_THEME = "journal.css"
+      # APP_THEME = "lumen.css"
+      # APP_THEME = "paper.css"
+      # APP_THEME = "readable.css"
+      # APP_THEME = "sandstone.css"
+      # APP_THEME = "simplex.css"
+      # APP_THEME = "slate.css"
+      # APP_THEME = "solar.css"
+      # APP_THEME = "spacelab.css"
+      # APP_THEME = "superhero.css"
+      # APP_THEME = "united.css"
+      # APP_THEME = "yeti.css"
   become: true
 
 - name: Set AIRFLOW_HOME for any logins

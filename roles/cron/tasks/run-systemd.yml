@@ -1,0 +1,12 @@
+---
+- name: Reload service crond
+  ansible.builtin.systemd:
+    name: crond
+    state: restarted
+  when: "OS == 'EL'"
+
+- name: Reload service crond
+  ansible.builtin.systemd:
+    name: cron
+    state: restarted
+  when: "OS != 'EL'"

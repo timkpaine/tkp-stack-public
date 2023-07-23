@@ -1,7 +1,4 @@
 ---
-################
-# Ubuntu steps #
-################
 - name: Install the "build essential" tools
   ansible.builtin.apt:
     name: build-essential
@@ -19,8 +16,6 @@
       - curl
       - git
       - git-lfs
-      - fail2ban
-      - firewalld
       - krb5-admin-server
       - krb5-kdc
       - openjdk-11-jdk
@@ -30,10 +25,11 @@
       - lm-sensors
       - lsof
       - make
+      - mlocate
       - ncat
       - net-tools
       - pkg-config
-      - mlocate
+      - telnet
       - uuid-dev
       - wget
       - vim

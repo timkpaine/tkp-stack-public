@@ -1,7 +1,4 @@
 ---
-################
-# Raspbian steps #
-################
 - name: Run the equivalent of "apt-get update"
   ansible.builtin.apt:
     update_cache: true

@@ -1,7 +1,7 @@
 ---
-- name: Include generic linux tasks
-  ansible.builtin.include_tasks: linux.yml
-  when: "OS != 'macOS'"
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
@@ -13,4 +13,8 @@
 
 - name: Setup and run with systemd
   ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Configure traffic
+  ansible.builtin.include_tasks: configure.yml
   when: "OS != 'macOS'"

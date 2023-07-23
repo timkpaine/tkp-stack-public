@@ -90,14 +90,3 @@
     group: services
     state: link
   become: true
-
-# NOTE: for refence
-# - name: Start db
-#   ansible.builtin.shell: |
-#     pg_ctl -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -l /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/logfile start
-#     sleep 5
-#     createdb -O airflow airflow -E utf-8 -U airflow -p 8094
-#   when: "OS == 'EL' and db_data.rc != 0"
-#   args:
-#     executable: /bin/bash
-#   become_user: postgres

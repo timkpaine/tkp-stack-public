@@ -36,6 +36,6 @@
     path: /Users/airflow/.bash_profile
     block: |
       export AIRFLOW_HOME=/var/lib/airflow
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - AIRFLOW HOME"
   become: true
   become_user: airflow

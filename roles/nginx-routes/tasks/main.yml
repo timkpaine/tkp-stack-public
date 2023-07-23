@@ -1,0 +1,19 @@
+---
+- name: Create static directory
+  ansible.builtin.file:
+    path: /opt/www
+    state: directory
+    mode: '0755'
+
+- name: Create static-public directory
+  ansible.builtin.file:
+    path: /opt/www-pub
+    state: directory
+    mode: '0755'
+
+- name: Configure public blocks
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

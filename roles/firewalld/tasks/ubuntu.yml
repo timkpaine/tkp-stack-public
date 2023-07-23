@@ -1,4 +1,10 @@
 ---
+- name: Install firewalld packages
+  ansible.builtin.apt:
+    name:
+      - firewalld
+    state: present
+
 - name: Permit traffic in default zone for http service when local
   ansible.posix.firewalld:
     service: http

@@ -10,3 +10,7 @@
 - name: Include Raspbian specific tasks
   ansible.builtin.include_tasks: raspbian.yml
   when: "OS == 'Raspbian'"
+
+- name: Setup and run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

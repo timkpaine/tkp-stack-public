@@ -1,0 +1,19 @@
+---
+
+- name: Install R
+  ansible.builtin.dnf:
+    name:
+      - R
+    state: present
+
+
+- name: Install R kernel for jupyter
+  ansible.builtin.shell: |
+    R -e "install.packages('IRkernel', repos='http://cran.us.r-project.org')"
+    R -e "IRkernel::installspec(user = FALSE)"
+  args:
+    executable: /bin/bash
+  vars:
+    run: true
+  when: run
+  become: true

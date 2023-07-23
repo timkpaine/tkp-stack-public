@@ -27,3 +27,7 @@
     create: true
   become: true
   when: "OS == 'macOS'"
+
+- name: Run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

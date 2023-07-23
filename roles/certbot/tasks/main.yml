@@ -1,15 +1,8 @@
 ---
-- name: Install certbot
-  ansible.builtin.pip:
-    name:
-      - certbot
-  become: true
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
   when: "OS == 'EL'"
 
-- name: Install the certbot packages
-  ansible.builtin.apt:
-    name:
-      - certbot
-      - python3-certbot-nginx
-    state: present
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
   when: "OS == 'Ubuntu'"

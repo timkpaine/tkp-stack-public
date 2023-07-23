@@ -1,0 +1,11 @@
+---
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run NGINX
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    name: nginx

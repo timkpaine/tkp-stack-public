@@ -1,0 +1,7 @@
+---
+- name: Install certbot
+  ansible.builtin.dnf:
+    name:
+      - certbot
+      - python3-certbot-nginx
+  become: true

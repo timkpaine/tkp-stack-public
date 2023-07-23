@@ -1,0 +1,15 @@
+---
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Configure cockpit behind reverse proxy
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Run cockpit with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

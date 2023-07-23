@@ -1,0 +1,36 @@
+---
+- name: Update server blocks for https-only
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    marker: "### {mark} ANSIBLE MANAGED BLOCK - FORCE TLS"
+    insertafter: "### BEGIN SERVERS"
+    block: |
+        server {
+          listen 80;
+          return 301 https://$host$request_uri;
+        }
+
+- name: Update server blocks for private routes
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    marker: "### {mark} ANSIBLE MANAGED BLOCK - PUBLIC ROOT DOMAIN"
+    insertafter: "### BEGIN SERVERS"
+    block: |
+      server {
+        server_name public.{{ ROOT_DOMAIN }};
+        root /opt/www-pub/;
+        autoindex on;
+      }
+  when: inventory_hostname is match("dev*")
+
+- name: Update server blocks for public routes
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    marker: "### {mark} ANSIBLE MANAGED BLOCK - PUBLIC FQDN"
+    insertafter: "### BEGIN SERVERS"
+    block: |
+      server {
+        server_name public.{{ inventory_hostname }};
+        root /opt/www-pub/;
+        autoindex on;
+      }

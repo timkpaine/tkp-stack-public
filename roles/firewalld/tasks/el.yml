@@ -1,0 +1,6 @@
+---
+- name: Install firewalld packages
+  ansible.builtin.dnf:
+    name:
+      - firewalld
+    state: present

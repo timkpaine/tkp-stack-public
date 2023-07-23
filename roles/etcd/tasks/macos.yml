@@ -1,0 +1,6 @@
+---
+- name: Install etcd
+  community.general.homebrew:
+    name:
+      - etcd
+    state: present

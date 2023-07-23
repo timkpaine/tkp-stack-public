@@ -9,5 +9,4 @@
     cp -r /usr/lib/postgresql/{{ POSTGRES_VERSION }}/* /usr/local/
   args:
     creates: "/usr/local/bin/initdb"
-
   become: true

@@ -1,0 +1,12 @@
+---
+- name: Run airflow scheduler/webserver with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Run airflow scheduler/webserver with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"
+
+# NOTE:
+# do something like:
+# airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin

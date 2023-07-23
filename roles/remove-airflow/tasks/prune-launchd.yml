@@ -18,7 +18,7 @@
   become: true
   when: webserver_plist.stat is defined and webserver_plist.stat.exists
 
-- name: Unload airflow-scheduler with launchd
+- name: Unload airflow scheduler with launchd
   community.general.launchd:
     name: timkpaine.airflow-scheduler
     state: unloaded

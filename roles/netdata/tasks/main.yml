@@ -1,0 +1,215 @@
+---
+- name: Install netdata
+  ansible.builtin.dnf:
+    name:
+      - netdata
+    state: present
+  when: "OS == 'EL'"
+
+- name: Install netdata
+  ansible.builtin.apt:
+    name:
+      - netdata
+    state: present
+  when: "OS == 'Ubuntu'"
+
+- name: Create netdata directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/netdata
+    state: directory
+    mode: '0755'
+
+- name: Copy netdata config
+  ansible.builtin.copy:
+    dest: /etc/netdata/netdata.conf
+    mode: '0644'
+    content: |
+      # netdata configuration
+      # You can download the latest version of this file, using:
+      #  wget -O /etc/netdata/netdata.conf http://localhost:19999/netdata.conf
+      # or
+      #  curl -o /etc/netdata/netdata.conf http://localhost:19999/netdata.conf
+      # You can uncomment and change any of the options below.
+      # The value shown in the commented settings, is the default value.
+      #
+      # global netdata configuration
+      [global]
+          run as user = netdata
+
+          # the default database size - 1 hour
+          history = 3600
+
+          # some defaults to run netdata with least priority
+          process scheduling policy = idle
+          OOM score = 1000
+
+          stock config directory = /etc/netdata/conf.d
+
+      [web]
+          web files owner = netdata
+          web files group = netdata
+
+          # by default do not expose the netdata port
+          bind to = localhost
+
+          default port = {{ PORTS.NETDATA }}
+
+      [health]
+          stock health configuration directory = /etc/netdata/conf.d/health.d
+  become: true
+
+- name: Copy netdata service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/netdata.service
+    mode: '0644'
+    content: |
+      # SPDX-License-Identifier: GPL-3.0-or-later
+      [Unit]
+      Description=Real time performance monitoring
+
+      # append here other services you want netdata to wait for them to start
+      After=network.target httpd.service squid.service nfs-server.service mysqld.service mysql.service named.service postfix.service chronyd.service
+
+      [Service]
+      Type=simple
+      User=netdata
+      Group=netdata
+      RuntimeDirectory=netdata
+      RuntimeDirectoryMode=0775
+      PIDFile=/var/run/netdata/netdata.pid
+      ExecStart=/usr/sbin/netdata -P /var/run/netdata/netdata.pid -D
+      ExecStartPre=/bin/mkdir -p /var/cache/netdata
+      ExecStartPre=/bin/chown -R netdata:netdata /var/cache/netdata
+      ExecStartPre=/bin/mkdir -p /var/run/netdata
+      ExecStartPre=/bin/chown -R netdata:netdata /var/run/netdata
+      PermissionsStartOnly=true
+
+      # saving a big db on slow disks may need some time
+      TimeoutStopSec=150
+
+      # restart netdata if it crashes
+      Restart=on-failure
+      RestartSec=30
+
+      # The minimum netdata Out-Of-Memory (OOM) score.
+      # netdata (via [global].OOM score in netdata.conf) can only increase the value set here.
+      # To decrease it, set the minimum here and set the same or a higher value in netdata.conf.
+      # Valid values: -1000 (never kill netdata) to 1000 (always kill netdata).
+      OOMScoreAdjust=1000
+
+      # Valid policies: other (the system default) | batch | idle | fifo | rr
+      # To give netdata the max priority, set CPUSchedulingPolicy=rr and CPUSchedulingPriority=99
+      CPUSchedulingPolicy=idle
+
+      # This sets the scheduling priority (for policies: rr and fifo).
+      # Priority gets values 1 (lowest) to 99 (highest).
+      #CPUSchedulingPriority=1
+
+      # For scheduling policy 'other' and 'batch', this sets the lowest niceness of netdata (-20 highest to 19 lowest).
+      #Nice=0
+
+      # Capabilities
+      # is required for freeipmi and slabinfo plugins
+      CapabilityBoundingSet=CAP_DAC_OVERRIDE
+      # is required for apps plugin
+      CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+      # is required for freeipmi plugin
+      CapabilityBoundingSet=CAP_FOWNER
+      # is required for apps, perf and slabinfo plugins
+      CapabilityBoundingSet=CAP_SETPCAP
+      # is required for perf plugin
+      CapabilityBoundingSet=CAP_SYS_ADMIN
+      # is required for apps plugin
+      CapabilityBoundingSet=CAP_SYS_PTRACE
+      # is required for ebpf plugin
+      CapabilityBoundingSet=CAP_SYS_RESOURCE
+      # is required for fping app
+      CapabilityBoundingSet=CAP_NET_RAW
+      # is required for cgroups plugin
+      CapabilityBoundingSet=CAP_SYS_CHROOT
+
+      # Sandboxing
+      ProtectSystem=full
+      ProtectHome=read-only
+      # PrivateTmp break netdatacli functionality. See - https://github.com/netdata/netdata/issues/7587
+      #PrivateTmp=true
+      ProtectControlGroups=true
+      # We whitelist this because it's the standard location to listen on a UNIX socket.
+      ReadWriteDirectories=/run/netdata
+      # This is needed to make email-based alert deliver work if Postfix is the email provider on the system.
+      ReadWriteDirectories=-/var/spool/postfix/maildrop
+
+      [Install]
+      WantedBy=multi-user.target
+
+  become: true
+
+- name: Update nginx server blocks for netdata route
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    marker: "### {mark} ANSIBLE MANAGED BLOCK - NETDATA"
+    insertafter: "### BEGIN SERVERS"
+    block: |
+      server {
+          server_name  monitor.paine.nyc;
+          root         /usr/share/nginx/html;
+
+          # Load configuration files for the default server block.
+          include /etc/nginx/default.d/*.conf;
+
+          location / {
+              proxy_pass http://127.0.0.1:{{ PORTS.NETDATA }};
+              proxy_redirect http://localhost:{{ PORTS.NETDATA }} https://monitor.paine.nyc;
+              auth_gss on;
+              auth_gss_keytab /etc/security/keytabs/sso.keytab;
+              proxy_read_timeout 90;
+              proxy_http_version 1.1;
+              proxy_buffering off;
+              proxy_set_header X-Real-IP  $remote_addr;
+              proxy_set_header Host $host;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+
+              # needed for websocket
+              proxy_set_header Upgrade $http_upgrade;
+              proxy_set_header Connection "upgrade";
+              proxy_buffers 8 32k;
+              proxy_buffer_size 64k;
+
+              # change scheme of "Origin" to http
+              proxy_set_header Origin http://$host;
+            }
+
+            error_page 404 /404.html;
+              location = /40x.html {
+            }
+
+            error_page 500 502 503 504 /50x.html;
+              location = /50x.html {
+            }
+      }
+  when: "inventory_hostname == 'host1.paine.nyc'"
+
+- name: Ensure proper permissions on netdata website assets
+  ansible.builtin.file:
+    path: /usr/share/netdata
+    owner: netdata
+    group: netdata
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run netdata
+  ansible.builtin.systemd:
+    name: netdata
+    state: started
+    enabled: true
+
+- name: Restart nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+    enabled: true

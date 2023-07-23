@@ -1,0 +1,28 @@
+---
+- name: Add the user 'etcd'
+  ansible.builtin.user:
+    name: etcd
+    shell: /bin/bash
+    group: staff
+    groups: services,staff
+    append: true
+  become: true
+
+- name: Configure etcd
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
+
+- name: Run etcd with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"

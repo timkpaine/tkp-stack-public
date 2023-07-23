@@ -1,0 +1,18 @@
+---
+- name: Create dask scheduler working directory
+  ansible.builtin.file:
+    path: /var/lib/dask/scheduler
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true
+
+- name: Create dask scheduler working directory
+  ansible.builtin.file:
+    path: /var/log/dask/scheduler
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true

@@ -1,0 +1,18 @@
+---
+dependencies:
+  - role: jupyter
+
+galaxy_info:
+  role_name: octave
+  author: timkpaine
+  description: Install Octave with jupyter support
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+  galaxy_tags:
+    - development

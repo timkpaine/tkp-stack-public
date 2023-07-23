@@ -1,5 +1,1 @@
 ---
-- name: Reload service crond, in all cases
-  ansible.builtin.systemd:
-    name: cron
-    state: restarted

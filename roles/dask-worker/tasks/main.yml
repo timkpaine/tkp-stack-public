@@ -1,0 +1,14 @@
+---
+- name: Pull variables
+  ansible.builtin.include_vars: main.yml
+
+- name: Configure dask workers
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Run dask-worker with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Run dask-worker with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"

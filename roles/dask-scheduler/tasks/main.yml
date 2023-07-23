@@ -1,0 +1,11 @@
+---
+- name: Configure dask scheduler
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Run dask-scheduler with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Run dask-scheduler with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS'"

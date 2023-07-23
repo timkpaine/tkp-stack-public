@@ -1,0 +1,65 @@
+---
+- name: Install user packages
+  community.general.homebrew:
+    name:
+      # - bat
+      # - duf
+      - flyctl
+      - fzf
+      - gh
+      - golang
+      - graphviz
+      - gtop
+      # - hexyl
+      # - highlight
+      - hiredis
+      # - jq
+      - lua
+      # - lua@5.3
+      - luarocks
+      - lunchy
+      - multimarkdown
+      # - qt
+      # - quantlib
+      # - sbt
+      # - scala
+      # - screenfetch
+      # - shyaml
+      # - ta-lib
+      - tig
+      - tmux
+      - watch
+      - wget
+      - zeromq
+      - zstd
+    state: present
+  when: "OS == 'macOS'"
+
+- name: Install Apps
+  community.general.homebrew:
+    name:
+      - angry-ip-scanner
+      - another-redis-desktop-manager
+      - appcleaner
+      - basictex
+      - chromedriver
+      - gtkwave
+      - geektool
+      - hyperswitch
+      # - homebrew/cask/iglance
+      - iterm2
+      - keka
+      - launchcontrol
+      - licecap
+      # - nocturne
+      - numi
+      - omnidisksweeper
+      - onyx
+      - rectangle
+      - soundsource
+      # - stats
+      # - tigervnc-viewer
+      - transmission
+      - vagrant
+    state: present
+  failed_when: false

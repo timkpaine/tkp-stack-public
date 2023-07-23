@@ -1,0 +1,40 @@
+---
+- name: Copy etcd service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/etcd.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=etcd key-value store
+      Documentation=https://github.com/etcd-io/etcd
+      After=network.target
+      Wants=network.target
+
+      [Service]
+      User=etcd
+      Type=notify
+      Environment=ETCD_DATA_DIR=/var/lib/etcd
+      Environment=ETCD_NAME=%m
+      ExecStart=/usr/local/bin/etcd --config-file /etc/etcd/etcd.yml
+      Restart=always
+      RestartSec=10s
+      LimitNOFILE=40000
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+  become: true
+
+- name: Run etcd
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: etcd
+  become: true

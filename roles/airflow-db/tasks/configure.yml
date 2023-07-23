@@ -59,10 +59,13 @@
   become: true
   become_user: postgres
 
+# NOTE this fails sometimes
 - name: Initialize airflow db structure
-  ansible.builtin.command: /var/lib/venvs/airflow/bin/activate && airflow db init
-  environment:
-    AIRFLOW_HOME: /var/lib/airflow
+  ansible.builtin.shell: |
+    . /var/lib/venvs/airflow/bin/activate
+    AIRFLOW_HOME=/var/lib/airflow airflow db init
+  args:
+    executable: /bin/bash
   when: db_data.stat is not defined or not db_data.stat.exists
   become: true
   become_user: airflow

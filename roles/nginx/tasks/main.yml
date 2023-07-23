@@ -1,0 +1,35 @@
+---
+- name: Add the user 'nginx'
+  ansible.builtin.user:
+    name: nginx
+    shell: /bin/bash
+    group: staff
+    groups: services,staff
+    append: true
+  become: true
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+# - name: Build nginx from source
+#   ansible.builtin.include_tasks: build.yml
+#   when: "inventory_hostname == 'host1.paine.nyc'"
+
+- name: Configure nginx
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Create cache directory if it does not exist
+  ansible.builtin.file:
+    path: /var/cache/nginx
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Run nginx with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS'"
