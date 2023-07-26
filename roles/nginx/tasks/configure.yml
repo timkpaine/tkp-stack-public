@@ -71,9 +71,9 @@
       }
   become: true
 
-- name: Ensure nginx file for vhost is present
+- name: Add nginx server file for vhost
   ansible.builtin.copy:
-    dest: /etc/nginx/conf.d/00-default-vhost.conf
+    dest: /etc/nginx/conf.d/{{ NGINX_DEFAULT_VHOST }}-default-vhost.conf
     mode: '0644'
     content: |
       server {
@@ -86,10 +86,11 @@
           return 301 https://$host$request_uri;
       }
   become: true
+  when: inventory_hostname is match("dev*")
 
-- name: Ensure nginx file for dokku is present
+- name: Add nginx server file for dokku
   ansible.builtin.copy:
-    dest: /etc/nginx/conf.d/dokku.conf
+    dest: /etc/nginx/conf.d/{{ NGINX_DOKKU }}-dokku.conf
     mode: '0644'
     content: |
       include /home/dokku/*/nginx.conf;
@@ -104,6 +105,7 @@
       ssl_dhparam /etc/nginx/dhparam.pem;
       ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
   become: true
+  when: inventory_hostname is match("dev*")
 
 - name: Create cache directory if it does not exist
   ansible.builtin.file:

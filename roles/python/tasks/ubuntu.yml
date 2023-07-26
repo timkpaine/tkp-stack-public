@@ -3,4 +3,5 @@
   ansible.builtin.apt:
     name:
       - python3
+      - python3-dev
     state: present

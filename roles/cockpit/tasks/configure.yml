@@ -1,10 +1,8 @@
 ---
-- name: Update server blocks for cockpit
-  ansible.builtin.blockinfile:
-    path: /etc/nginx/nginx.conf
-    marker: "### {mark} ANSIBLE MANAGED BLOCK - COCKPIT"
-    insertafter: "### BEGIN SERVERS"
-    block: |
+- name: Add nginx server file for cockpit
+  ansible.builtin.copy:
+    dest: /etc/nginx/conf.d/{{ NGINX_COCKPIT }}-cockpit.conf
+    content: |
       server {
           server_name  cockpit.{{ inventory_hostname }};
           root         /usr/share/nginx/html;
@@ -47,3 +45,29 @@
             location = /50x.html {
           }
       }
+  when: "not inventory_hostname is match('ipa*')"
+
+- name: Add apache reverse proxy for cockpit
+  ansible.builtin.copy:
+    dest: /etc/httpd/conf.d/cockpit.conf
+    mode: '0644'
+    content: |
+      <VirtualHost *:80>
+        ServerName cockpit.{{ inventory_hostname }}
+
+        SSLProxyEngine On
+        SSLProxyVerify none
+        SSLProxyCheckPeerCN Off
+        SSLProxyCheckPeerName Off
+        SSLProxyCheckPeerExpire Off
+
+        ProxyPreserveHost On
+        ProxyRequests Off
+
+        # Proxy to your local cockpit instance
+        ProxyPass /cockpit/socket wss://localhost:9090/cockpit/socket
+        ProxyPassReverse /cockpit/socket wss://cockpit.ipa.paine.nyc/cockpit/socket
+        ProxyPass "/" https://127.0.0.1:9090/
+        ProxyPassReverse "/" "https://cockpit.ipa.paine.nyc/"
+      </VirtualHost>
+  when: "inventory_hostname is match('ipa*')"

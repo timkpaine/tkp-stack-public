@@ -4,3 +4,4 @@
     state: started
     enabled: true
     name: nginx
+  when: "not inventory_hostname is match('ipa*')"

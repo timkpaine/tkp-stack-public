@@ -5,3 +5,12 @@
       - certbot
       - python3-certbot-nginx
   become: true
+  when: "not inventory_hostname is match('ipa*')"
+
+- name: Install certbot
+  ansible.builtin.dnf:
+    name:
+      - certbot
+      - python3-certbot-apache
+  become: true
+  when: "inventory_hostname is match('ipa*')"

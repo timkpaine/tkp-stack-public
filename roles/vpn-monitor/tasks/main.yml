@@ -1,23 +1,23 @@
 ---
-- name: Add the user 'supervisor'
+- name: Add the user 'vpnmon'
   ansible.builtin.user:
-    name: supervisor
+    name: vpnmon
     shell: /bin/bash
     group: staff
     groups: services,staff
     append: true
   become: true
 
-- name: Configure supervisor
+- name: Configure openvpn-monitor
   ansible.builtin.include_tasks: configure.yml
 
 - name: Setup Virtualenv
   ansible.builtin.include_tasks: venv.yml
 
-- name: Run supervisor with systemd
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Run opevpn-monitor with systemd
   ansible.builtin.include_tasks: run-systemd.yml
   when: "OS != 'macOS'"
-
-- name: Run supervisor with launchd
-  ansible.builtin.include_tasks: run-launchd.yml
-  when: "OS == 'macOS'"

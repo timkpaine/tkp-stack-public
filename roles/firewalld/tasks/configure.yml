@@ -1,5 +1,5 @@
 ---
-- name: Permit traffic in default zone for https service
+- name: Enable traffic in default zone for https service
   ansible.posix.firewalld:
     service: https
     permanent: true

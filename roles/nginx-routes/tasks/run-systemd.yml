@@ -9,3 +9,4 @@
     state: restarted
     enabled: true
     name: nginx
+  when: "not inventory_hostname is match('ipa*')"
