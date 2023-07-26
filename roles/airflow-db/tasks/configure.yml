@@ -41,7 +41,7 @@
     block: |
       host all all 127.0.0.1/8       ident
       host all all 127.0.0.1/8       md5
-      host all all {{ DOMAINS_VPN }}/8 md5
+      host all all {{ VPN_BASE_IP }}/8 md5
   become: true
 
 - name: Start airflow db

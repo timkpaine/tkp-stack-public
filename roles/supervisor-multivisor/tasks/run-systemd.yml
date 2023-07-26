@@ -12,7 +12,7 @@
 
       [Service]
       Type=simple
-      ExecStart=/var/lib/venvs/supervisor/bin/multivisor --bind *:{{ PORTS.SUPERVISOR_MULTIVISOR_WEB }} -c /etc/supervisor/multivisor.conf
+      ExecStart=/var/lib/venvs/supervisor/bin/multivisor --bind *:{{ PORTS_SUPERVISOR_MULTIVISOR_WEB }} -c /etc/supervisor/multivisor.conf
 
       [Install]
       WantedBy=multi-user.target

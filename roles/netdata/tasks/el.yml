@@ -1,0 +1,6 @@
+---
+- name: Install netdata
+  ansible.builtin.dnf:
+    name:
+      - netdata
+    state: present

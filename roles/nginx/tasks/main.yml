@@ -18,7 +18,7 @@
 
 # - name: Build nginx from source
 #   ansible.builtin.include_tasks: build.yml
-#   when: "inventory_hostname == 'host1.paine.nyc'"
+#   when: "inventory_hostname == 'host1.{{ ROOT_DOMAIN }}'"
 
 - name: Configure nginx
   ansible.builtin.include_tasks: configure.yml

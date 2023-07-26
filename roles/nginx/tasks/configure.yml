@@ -61,7 +61,7 @@
         server {
             server_name  {{ inventory_hostname }};
             listen 80;
-            return 301 https://paine.nyc;
+            return 301 https://{{ ROOT_DOMAIN }};
         }
 
         ### BEGIN SERVERS

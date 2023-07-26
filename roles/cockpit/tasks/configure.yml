@@ -11,8 +11,8 @@
           include /etc/nginx/default.d/*.conf;
 
           location / {
-            proxy_pass http://127.0.0.1:9090;
-            proxy_redirect http://localhost:9090 https://cockpit.{{ inventory_hostname }};
+            proxy_pass http://127.0.0.1:{{ PORTS_COCKPIT }};
+            proxy_redirect http://localhost:{{ PORTS_COCKPIT }} https://cockpit.{{ inventory_hostname }};
             # auth_gss on;
             # auth_gss_keytab /etc/security/keytabs/sso.keytab;
             proxy_read_timeout 90;
@@ -36,20 +36,12 @@
             # See: https://github.com/cockpit-project/cockpit/issues/5239
             gzip off;
           }
-
-          error_page 404 /404.html;
-            location = /40x.html {
-          }
-
-          error_page 500 502 503 504 /50x.html;
-            location = /50x.html {
-          }
       }
   when: "not inventory_hostname is match('ipa*')"
 
 - name: Add apache reverse proxy for cockpit
   ansible.builtin.copy:
-    dest: /etc/httpd/conf.d/cockpit.conf
+    dest: /etc/httpd/conf.d/{{ NGINX_COCKPIT }}-cockpit.conf
     mode: '0644'
     content: |
       <VirtualHost *:80>
@@ -65,9 +57,9 @@
         ProxyRequests Off
 
         # Proxy to your local cockpit instance
-        ProxyPass /cockpit/socket wss://localhost:9090/cockpit/socket
-        ProxyPassReverse /cockpit/socket wss://cockpit.ipa.paine.nyc/cockpit/socket
-        ProxyPass "/" https://127.0.0.1:9090/
-        ProxyPassReverse "/" "https://cockpit.ipa.paine.nyc/"
+        ProxyPass /cockpit/socket wss://localhost:{{ PORTS_COCKPIT }}/cockpit/socket
+        ProxyPassReverse /cockpit/socket wss://cockpit.{{ DOMAINS_IPA }}/cockpit/socket
+        ProxyPass "/" https://127.0.0.1:{{ PORTS_COCKPIT }}/
+        ProxyPassReverse "/" "https://cockpit.{{ DOMAINS_IPA }}/"
       </VirtualHost>
   when: "inventory_hostname is match('ipa*')"

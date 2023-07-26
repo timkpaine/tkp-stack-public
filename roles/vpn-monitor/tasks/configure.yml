@@ -96,7 +96,7 @@
           }
 
           location / {
-              allow 10.8.0.0/24;
+              allow {{ VPN_BASE_IP }}/24;
               deny all;
               proxy_pass http://127.0.0.1:{{ PORTS_VPN_MONITOR }};
               proxy_redirect http://localhost:{{ PORTS_VPN_MONITOR }} https://vpn-monitor.{{ inventory_hostname }};
@@ -109,19 +109,6 @@
               proxy_read_timeout 90;
               proxy_redirect off;
           }
-
-          # show as hidden
-          error_page 403 /404.html;
-              location = /40x.html {
-          }
-
-          error_page 404 /404.html;
-              location = /40x.html {
-          }
-
-          error_page 500 502 503 504 /50x.html;
-              location = /50x.html {
-          }
       }
   become: true
   when: "inventory_hostname is match('vpn*')"
@@ -130,6 +117,7 @@
   ansible.builtin.blockinfile:
     path: /etc/hosts
     block: |
-      10.8.0.1 vpn-monitor.{{ inventory_hostname }}
+      {{ VPN_BASE_IP }} vpn-monitor.{{ inventory_hostname }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK vpn-monitor.{{ inventory_hostname }}"
+  become: true
   when: inventory_hostname is match("vpn*")
