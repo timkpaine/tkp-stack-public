@@ -1,7 +1,4 @@
 ---
-- name: Pull version variable
-  ansible.builtin.include_vars: version.yml
-
 - name: Configure airflow db
   ansible.builtin.include_tasks: configure.yml
 

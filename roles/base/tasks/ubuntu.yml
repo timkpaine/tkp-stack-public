@@ -29,9 +29,12 @@
       - ncat
       - net-tools
       - pkg-config
+      - tar
       - telnet
+      - unzip
       - uuid-dev
       - wget
       - vim
+      - zip
       - zlib1g-dev
     state: present

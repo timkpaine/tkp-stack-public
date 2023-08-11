@@ -9,6 +9,14 @@
   become: true
   when: "OS == 'EL' or OS == 'Ubuntu'"
 
+- name: Configuration users to sudo (nopasswd)
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/users-root
+    line: "ANSIBLE_PRIMARY_USER  ALL=(ALL) NOPASSWD: ALL"
+    create: true
+  become: true
+  when: "OS == 'EL' or OS == 'Ubuntu'"
+
 - name: Configuration users to sudo
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/users

@@ -14,15 +14,15 @@
       [Service]
       Type=simple
       User=netdata
-      Group=netdata
+      Group=services
       RuntimeDirectory=netdata
       RuntimeDirectoryMode=0775
       PIDFile=/var/run/netdata/netdata.pid
       ExecStart=/usr/sbin/netdata -P /var/run/netdata/netdata.pid -D
       ExecStartPre=/bin/mkdir -p /var/cache/netdata
-      ExecStartPre=/bin/chown -R netdata:netdata /var/cache/netdata
+      ExecStartPre=/bin/chown -R netdata:services /var/cache/netdata
       ExecStartPre=/bin/mkdir -p /var/run/netdata
-      ExecStartPre=/bin/chown -R netdata:netdata /var/run/netdata
+      ExecStartPre=/bin/chown -R netdata:services /var/run/netdata
       PermissionsStartOnly=true
 
       # saving a big db on slow disks may need some time
@@ -82,7 +82,6 @@
 
       [Install]
       WantedBy=multi-user.target
-
   become: true
 
 - name: Reload daemon files
@@ -101,3 +100,4 @@
     name: nginx
     state: restarted
     enabled: true
+  when: "not inventory_hostname is match('ipa*')"

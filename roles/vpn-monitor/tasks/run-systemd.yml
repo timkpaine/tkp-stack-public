@@ -28,6 +28,13 @@
     daemon_reload: true
     force: true
 
+- name: Run openvpn-monitor
+  ansible.builtin.systemd:
+    state: restarted
+    enabled: true
+    name: openvpn-monitor
+  when: "not inventory_hostname is match('ipa*')"
+
 - name: Run NGINX
   ansible.builtin.systemd:
     state: restarted

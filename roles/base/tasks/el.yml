@@ -33,8 +33,11 @@
       - nc
       - net-tools
       - pkgconfig
+      - tar
       - telnet
+      - unzip
       - wget
       - vim
+      - zip
       - zlib-devel
     state: present

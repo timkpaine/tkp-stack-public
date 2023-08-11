@@ -1,7 +1,4 @@
 ---
-- name: Pull version variable
-  ansible.builtin.include_vars: version.yml
-
 - name: Create airflow db directory
   ansible.builtin.file:
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data
@@ -19,7 +16,7 @@
 
 - name: Create airflow db
   ansible.builtin.shell: |
-    initdb -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -U airflow || echo "sometimes flaky, lets assume ok"
+    /usr/local/bin/initdb -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -U airflow || echo "sometimes flaky, lets assume ok"
   args:
     executable: /bin/bash
     creates: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf
@@ -46,7 +43,7 @@
 
 - name: Start airflow db
   ansible.builtin.shell: |
-    pg_ctl -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -l /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/logfile start || echo "sometimes flaky, lets assume ok"
+    /usr/local/bin/pg_ctl -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data -l /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/logfile start || echo "sometimes flaky, lets assume ok"
   args:
     executable: /bin/bash
   when: db_data.stat is not defined or not db_data.stat.exists
@@ -54,7 +51,7 @@
   become_user: postgres
 
 - name: Initialize database with airflow
-  ansible.builtin.command: createdb -O airflow airflow -E utf-8 -U airflow -p {{ PORTS_AIRFLOW_POSTGRES }}
+  ansible.builtin.command: /usr/local/bin/createdb -O airflow airflow -E utf-8 -U airflow -p {{ PORTS_AIRFLOW_POSTGRES }}
   when: db_data.stat is not defined or not db_data.stat.exists
   become: true
   become_user: postgres

@@ -7,6 +7,14 @@
     group: services
     mode: '0755'
 
+- name: Create netdata conf.d directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/netdata/conf.d
+    state: directory
+    owner: netdata
+    group: services
+    mode: '0755'
+
 - name: Copy netdata config
   ansible.builtin.copy:
     dest: /etc/netdata/netdata.conf
@@ -37,7 +45,7 @@
 
       [web]
           web files owner = netdata
-          web files group = netdata
+          web files group = services
 
           # by default do not expose the netdata port
           bind to = localhost
@@ -51,13 +59,15 @@
 - name: Ensure proper permissions on netdata website assets
   ansible.builtin.file:
     path: /usr/share/netdata
+    state: directory
     owner: netdata
     group: services
+    recurse: true
   become: true
 
 - name: Add nginx server file for netdata
   ansible.builtin.copy:
-    dest: /etc/nginx/conf.d/{{ NGINX_COCKPIT }}-cockpit.conf
+    dest: /etc/nginx/conf.d/{{ NGINX_NETDATA }}-netdata.conf
     content: |
       server {
           server_name  monitor.{{ inventory_hostname }};
@@ -66,26 +76,30 @@
           # Load configuration files for the default server block.
           include /etc/nginx/default.d/*.conf;
 
+          location /.well-known {
+            autoindex on;
+            root /opt/www-pub/;
+          }
+
           location / {
+              allow {{ VPN_BASE_IP }}/24;
+              deny all;
               proxy_pass http://127.0.0.1:{{ PORTS_NETDATA }};
               proxy_redirect http://localhost:{{ PORTS_NETDATA }} https://monitor.{{ inventory_hostname }};
-              auth_gss on;
-              auth_gss_keytab /etc/security/keytabs/sso.keytab;
-              proxy_read_timeout 90;
+
               proxy_http_version 1.1;
-              proxy_buffering off;
-              proxy_set_header X-Real-IP  $remote_addr;
               proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header X-Forwarded-Proto $scheme;
-
-              # needed for websocket
+              proxy_set_header X-Forwarded-Proto $scheme;
               proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
+              proxy_hide_header X-Frame-Options;
+              proxy_read_timeout 90;
+              proxy_redirect off;
               proxy_buffers 8 32k;
               proxy_buffer_size 64k;
-
-              # change scheme of "Origin" to http
               proxy_set_header Origin http://$host;
             }
       }
@@ -94,10 +108,22 @@
 
 - name: Add apache reverse proxy for netdata
   ansible.builtin.copy:
-    dest: /etc/httpd/conf.d/{{ NGINX_COCKPIT }}-cockpit.conf
+    dest: /etc/httpd/conf.d/{{ NGINX_NETDATA }}-netdata.conf
     mode: '0644'
     content: |
       <VirtualHost *:80>
+        <Location />
+          Require ip {{ VPN_BASE_IP }}/24
+        </Location>
+
+        Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
+        <Directory "/var/www/letsencrypt/.well-known/acme-challenge/">
+            Options None
+            AllowOverride None
+            ForceType text/plain
+            RedirectMatch 404 "^(?!/\.well-known/acme-challenge/[\w-]{43}$)"
+        </Directory>
+
         ServerName monitor.{{ inventory_hostname }}
 
         SSLProxyEngine On
@@ -110,7 +136,26 @@
         ProxyRequests Off
 
         # Proxy to your local netdata instance
-        ProxyPass "/" https://127.0.0.1:{{ PORTS_NETDATA }}/
+        ProxyPass "/" http://127.0.0.1:{{ PORTS_NETDATA }}/
         ProxyPassReverse "/" "https://monitor.{{ inventory_hostname }}/"
       </VirtualHost>
   when: "inventory_hostname is match('ipa*')"
+
+- name: Add domain mappings to /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ VPN_BASE_IP }} monitor.{{ inventory_hostname }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK monitor.{{ inventory_hostname }}"
+  become: true
+  when: inventory_hostname is match("vpn*")
+
+- name: Add domain mappings to /etc/hosts for all possible vpn machines's netdata jobs
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ item.vpn_ip }} monitor.{{ item.fqdn }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK monitor.{{ item.username }}"
+  become: true
+  when: inventory_hostname is match("vpn*")
+  loop: "{{ VPN_USERS }}"
