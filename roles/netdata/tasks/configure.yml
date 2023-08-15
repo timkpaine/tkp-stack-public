@@ -23,25 +23,27 @@
     group: services
     content: |
       # netdata configuration
-      # You can download the latest version of this file, using:
+      #
+      # You can get the latest version of this file, using:
+      #
+      #  netdatacli dumpconfig > /etc/netdata/netdata.conf
+      #
+      # You can also download it using:
+      #
       #  wget -O /etc/netdata/netdata.conf http://localhost:19999/netdata.conf
       # or
       #  curl -o /etc/netdata/netdata.conf http://localhost:19999/netdata.conf
+      #
       # You can uncomment and change any of the options below.
       # The value shown in the commented settings, is the default value.
       #
-      # global netdata configuration
+
       [global]
           run as user = netdata
 
-          # the default database size - 1 hour
-          history = 3600
-
-          # some defaults to run netdata with least priority
-          process scheduling policy = idle
-          OOM score = 1000
-
-          stock config directory = /etc/netdata/conf.d
+          # default storage size - increase for longer data retention
+          page cache size = 32
+          dbengine multihost disk space = 256
 
       [web]
           web files owner = netdata
@@ -51,9 +53,6 @@
           bind to = localhost
 
           default port = {{ PORTS_NETDATA }}
-
-      [health]
-          stock health configuration directory = /etc/netdata/conf.d/health.d
   become: true
 
 - name: Ensure proper permissions on netdata website assets
@@ -112,8 +111,11 @@
     mode: '0644'
     content: |
       <VirtualHost *:80>
+        ServerName monitor.{{ inventory_hostname }}
+        ServerAlias monitor.{{ inventory_hostname }}
+
         <Location />
-          Require ip {{ VPN_BASE_IP }}/24
+          Require ip {{ VPN_BASE_IP }}/24 {{ IPA_IP_ADDRESS }} 127.0.0.1
         </Location>
 
         Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
@@ -123,8 +125,6 @@
             ForceType text/plain
             RedirectMatch 404 "^(?!/\.well-known/acme-challenge/[\w-]{43}$)"
         </Directory>
-
-        ServerName monitor.{{ inventory_hostname }}
 
         SSLProxyEngine On
         SSLProxyVerify none

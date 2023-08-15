@@ -46,8 +46,11 @@
     mode: '0644'
     content: |
       <VirtualHost *:80>
+        ServerName cockpit.{{ inventory_hostname }}
+        ServerAlias cockpit.{{ inventory_hostname }}
+
         <Location />
-          Require ip {{ VPN_BASE_IP }}/24
+          Require ip {{ VPN_BASE_IP }}/24 {{ IPA_IP_ADDRESS }} 127.0.0.1
         </Location>
 
         Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
@@ -57,8 +60,6 @@
             ForceType text/plain
             RedirectMatch 404 "^(?!/\.well-known/acme-challenge/[\w-]{43}$)"
         </Directory>
-
-        ServerName cockpit.{{ inventory_hostname }}
 
         SSLProxyEngine On
         SSLProxyVerify none
