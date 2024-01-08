@@ -1,0 +1,95 @@
+---
+- name: Create redpanda directory
+  ansible.builtin.file:
+    path: /var/lib/redpanda
+    state: directory
+    mode: '0775'
+    owner: redpanda
+    group: services
+  become: true
+
+- name: Create redpanda log directory
+  ansible.builtin.file:
+    path: /var/log/redpanda
+    state: directory
+    mode: '0775'
+    owner: redpanda
+    group: services
+  become: true
+
+- name: Copy redpanda config file into place
+  ansible.builtin.copy:
+    dest: /etc/redpanda/redpanda.yaml
+    mode: '0755'
+    owner: redpanda
+    group: services
+    content: |
+      redpanda:
+        # Data directory where all the files will be stored.
+        # This directory MUST resides on xfs partion.
+        data_directory: "/var/lib/redpanda/data"
+
+        # The initial cluster nodes addresses
+        seed_servers: []
+
+        # Redpanda server
+        rpc_server:
+          address: "0.0.0.0"
+          port: {{ PORTS_REDPANDA_RPC }}
+
+        # Redpanda server for other nodes to connect too
+        advertised_rpc_api:
+          address: "127.0.0.1"
+          port: {{ PORTS_REDPANDA_RPC }}
+
+        # Kafka transport
+        kafka_api:
+        - address: "0.0.0.0"
+          port: {{ PORTS_REDPANDA }}
+
+        # Kafka transport for other nodes to connect too
+        advertised_kafka_api:
+        - address: "127.0.0.1"
+          port: {{ PORTS_REDPANDA }}
+
+        # Admin server includes metrics, and cluster management
+        admin:
+          address: "0.0.0.0"
+          port: {{ PORTS_REDPANDA_ADMIN }}
+
+        # Skips most of the checks performed at startup (i.e. memory, xfs)
+        # not recomended for production use
+        developer_mode: true
+
+      # Enable Pandaproxy on port 8082
+      pandaproxy: {}
+
+      # Enable Schema Registry on port 8081
+      schema_registry: {}
+
+      rpk:
+        # TLS configuration.
+        #tls:
+          # The path to the root CA certificate (PEM)
+          #truststore_file: ""
+
+          # The path to the client certificate (PEM)
+          #cert_file: ""
+
+          # The path to the client certificate key (PEM)
+          #key_file: ""
+
+        # Available tuners
+        tune_network: false
+        tune_disk_scheduler: false
+        tune_disk_nomerges: false
+        tune_disk_irq: false
+        tune_fstrim: false
+        tune_cpu: false
+        tune_aio_events: false
+        tune_clocksource: false
+        tune_swappiness: false
+        enable_memory_locking: false
+        tune_coredump: false
+
+        coredump_dir: "/var/lib/redpanda/coredump"

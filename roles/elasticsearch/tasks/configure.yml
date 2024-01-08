@@ -1,0 +1,15 @@
+---
+- name: Setup elasticsearch port
+  ansible.builtin.lineinfile:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '^http\.port'
+    line: "http.port: {{ PORTS_ELASTICSEARCH }}"
+
+- name: Setup elasticsearch memory options
+  ansible.builtin.copy:
+    dest: /etc/elasticsearch/jvm.options.d/heapsize.options
+    mode: '0755'
+    content: |
+      -Xms{{ ELASTICSEARCH_HEAP_MEMORY  }}g
+      -Xmx{{ ELASTICSEARCH_HEAP_MEMORY  }}g
+  become: true

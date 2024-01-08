@@ -1,0 +1,21 @@
+---
+- name: Add the user 'elasticsearch'
+  ansible.builtin.user:
+    name: "{{ SERVICE_USERS.ELASTICSEARCH.username }}"
+    shell: "{{ SERVICE_USERS.ELASTICSEARCH.shell }}"
+    group: "{{ SERVICE_USERS.ELASTICSEARCH.group }}"
+    groups: "{{ SERVICE_USERS.ELASTICSEARCH.groups }}"
+    uid: "{{ SERVICE_USERS.ELASTICSEARCH.uid }}"
+  when: "inventory_hostname is match(INVENTORY_NAME_ELASTICSEARCH_PRIMARY)"
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL' and inventory_hostname is match(INVENTORY_NAME_ELASTICSEARCH_PRIMARY)"
+
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian' and inventory_hostname is match(INVENTORY_NAME_ELASTICSEARCH_PRIMARY)"
+
+- name: Run elasticsearch with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS' and inventory_hostname is match(INVENTORY_NAME_ELASTICSEARCH_PRIMARY)"

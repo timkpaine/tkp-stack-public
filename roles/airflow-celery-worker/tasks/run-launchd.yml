@@ -1,0 +1,45 @@
+---
+- name: Add launch daemon for airflow celery worker
+  ansible.builtin.copy:
+    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>airflow</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/var/lib/venvs/airflow/bin/airflow</string>
+          <string>celery</string>
+          <string>worker</string>
+        </array>
+        <key>EnvironmentVariables</key>
+        <dict>
+          <key>AIRFLOW_HOME</key>
+          <string>/var/lib/airflow</string>
+        </dict>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
+        <key>StandardOutPath</key>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
+        <key>WorkingDirectory</key>
+        <string>/var/lib/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}</string>
+      </dict>
+      </plist>
+  become: true
+  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
+
+- name: Start airflow-celery-worker rwith launchd
+  community.general.launchd:
+    name: timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}
+    state: restarted
+  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"

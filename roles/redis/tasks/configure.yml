@@ -1,0 +1,62 @@
+---
+- name: Create redis directory
+  ansible.builtin.file:
+    path: /var/lib/redis
+    state: directory
+    mode: '0775'
+    owner: redis
+    group: services
+  become: true
+
+- name: Create redis directory
+  ansible.builtin.file:
+    path: /var/lib/redis/db
+    state: directory
+    mode: '0775'
+    owner: redis
+    group: services
+  become: true
+
+- name: Create redis log directory
+  ansible.builtin.file:
+    path: /var/log/redis
+    state: directory
+    mode: '0775'
+    owner: redis
+    group: services
+  become: true
+
+- name: Setup redis port
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^port 6379'
+    line: "port {{ PORTS_REDIS }}"
+    create: true
+  become: true
+
+- name: Bind redis to all interfaces (internal only)
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^bind'
+    line: "bind *"
+    create: true
+  become: true
+  when: "MACHINE_LOCATION == 'internal'"
+
+- name: Disable protected mode for redis (internal only)
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^protected-mode'
+    line: "protected-mode no"
+    create: true
+  become: true
+  when: "MACHINE_LOCATION == 'internal'"
+
+- name: Set output folder
+  ansible.builtin.lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^dir'
+    line: "dir /var/lib/redis/db/"
+    create: true
+  become: true
+  when: "MACHINE_LOCATION == 'internal'"

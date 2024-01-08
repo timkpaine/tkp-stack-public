@@ -1,0 +1,17 @@
+---
+- name: Download redpanda
+  ansible.builtin.get_url:
+    url: https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.deb.sh
+    dest: /opt/src/redpanda.deb.sh
+    mode: '0755'
+
+- name: Run redpanda setup script
+  ansible.builtin.command: /opt/src/redpanda.deb.sh
+  args:
+    creates: /etc/apt/sources.list.d/redpanda-redpanda.list
+
+- name: Install redpanda
+  ansible.builtin.apt:
+    name:
+      - redpanda
+    state: present

@@ -1,0 +1,17 @@
+---
+- name: Download redpanda
+  ansible.builtin.get_url:
+    url: https://dl.redpanda.com/nzc4ZYQK3WRGd9sy/redpanda/cfg/setup/bash.rpm.sh
+    dest: /opt/src/redpanda.rpm.sh
+    mode: '0755'
+
+- name: Run redpanda setup script
+  ansible.builtin.command: /opt/src/redpanda.rpm.sh
+  args:
+    creates: /etc/yum.repos.d/vectorized-redpanda.repo
+
+- name: Install redpanda
+  ansible.builtin.dnf:
+    name:
+      - redpanda
+    state: present

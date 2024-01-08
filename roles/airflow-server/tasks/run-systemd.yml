@@ -1,0 +1,96 @@
+---
+- name: Copy airflow-webserver service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-webserver.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=Airflow webserver daemon
+      Wants=network.target airflow-postgresql.service airflow-scheduler.service dask.service
+      After=network.target airflow-postgresql.service airflow-scheduler.service dask.service
+
+      [Service]
+      User=airflow
+      Environment=AIRFLOW_HOME=/var/lib/airflow
+      Type=simple
+      ExecStart=/var/lib/venvs/airflow/bin/airflow webserver --pid /var/lib/airflow/webserver.pid -p {{ PORTS_AIRFLOW_WEBSERVER }}
+      Restart=on-failure
+      RestartSec=5s
+      PrivateTmp=true
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Copy airflow-scheduler service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-scheduler.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=Airflow scheduler daemon
+      After=network.target airflow-postgresql.service
+      Wants=network.target airflow-postgresql.service
+
+      [Service]
+      User=airflow
+      Environment=AIRFLOW_HOME=/var/lib/airflow
+      Type=simple
+      ExecStart=/var/lib/venvs/airflow/bin/airflow scheduler
+      Restart=always
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Copy airflow-triggerer service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-triggerer.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=Airflow triggerer daemon
+      After=network.target airflow-postgresql.service
+      Wants=network.target airflow-postgresql.service
+
+      [Service]
+      User=airflow
+      Environment=AIRFLOW_HOME=/var/lib/airflow
+      Type=simple
+      ExecStart=/var/lib/venvs/airflow/bin/airflow triggerer
+      Restart=always
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run airflow-scheduler
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: airflow-scheduler
+
+- name: Run airflow-webserver
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: airflow-webserver
+
+- name: Run airflow-triggerer
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: airflow-triggerer

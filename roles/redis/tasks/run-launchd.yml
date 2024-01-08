@@ -1,0 +1,37 @@
+---
+- name: Add launch daemon for redis
+  ansible.builtin.copy:
+    dest: /Library/LaunchDaemons/timkpaine.redis.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>redis</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.redis</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/opt/homebrew/bin/redis-server</string>
+          <string>/etc/redis/redis.conf</string>
+        </array>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/var/log/redis/err.log</string>
+        <key>StandardOutPath</key>
+        <string>/var/log/redis/out.log</string>
+        <key>WorkingDirectory</key>
+        <string>/var/lib/redis</string>
+      </dict>
+      </plist>
+  become: true
+
+- name: Start redis with launchd
+  community.general.launchd:
+    name: timkpaine.redis
+    state: restarted

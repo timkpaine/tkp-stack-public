@@ -1,0 +1,6 @@
+---
+- name: Run elasticsearch
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: elasticsearch

@@ -1,0 +1,38 @@
+---
+
+- name: Copy airflow-celery-worker service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-celery-worker@.service
+    mode: '0644'
+    owner: root
+    group: root
+    content: |
+      [Unit]
+      Description=Airflow Celery Worker, instance %i
+      Wants=network.target airflow-postgresql.service airflow-scheduler.service
+      After=network.target airflow-postgresql.service airflow-scheduler.service
+
+      [Service]
+      User=airflow
+      Environment=AIRFLOW_HOME=/var/lib/airflow
+      Type=simple
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker
+      Restart=on-failure
+      RestartSec=5s
+      PrivateTmp=true
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run airflow-scheduler
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: "{{ 'airflow-celery-worker@%d' | format(item) }}"
+  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"

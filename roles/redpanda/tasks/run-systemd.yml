@@ -1,0 +1,11 @@
+---
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run redpanda
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: redpanda

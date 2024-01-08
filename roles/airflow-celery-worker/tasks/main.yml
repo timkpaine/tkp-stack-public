@@ -1,0 +1,11 @@
+---
+- name: Pull variables
+  ansible.builtin.include_vars: main.yml
+
+- name: Run airflow celery worker with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_CELERY_WORKER)"
+
+- name: Run airflow celery worker with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_CELERY_WORKER)"
