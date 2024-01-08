@@ -7,8 +7,14 @@
   ansible.builtin.include_tasks: ubuntu.yml
   when: "OS == 'Ubuntu'"
 
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian'"
+
+# - name: Build nginx from source
 - name: Configure cockpit behind reverse proxy
   ansible.builtin.include_tasks: configure.yml
+  when: "OS != 'macOS'"
 
 - name: Run cockpit with systemd
   ansible.builtin.include_tasks: run-systemd.yml

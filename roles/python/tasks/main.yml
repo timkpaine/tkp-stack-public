@@ -41,12 +41,12 @@
 ###############################
 # Core Python deps / Venv dir #
 ###############################
-- name: Install python core deps
-  ansible.builtin.pip:
-    name:
-      - numpy
-      - scipy
-      - pandas
-      - matplotlib
-      - virtualenv
-  become: true
+# - name: Install python core deps
+#   ansible.builtin.pip:
+#     name:
+#       - numpy
+#       - scipy
+#       - pandas
+#       - matplotlib
+#       - virtualenv
+#   become: true

@@ -25,9 +25,9 @@
         <key>RunAtLoad</key>
         <true/>
         <key>StandardErrorPath</key>
-        <string>/var/log/airflow/db.err.log</string>
+        <string>/var/lib/airflow/logs/db.err.log</string>
         <key>StandardOutPath</key>
-        <string>/var/log/airflow/db.out.log</string>
+        <string>/var/lib/airflow/logs/db.out.log</string>
         <key>WorkingDirectory</key>
         <string>/var/lib/airflow</string>
       </dict>

@@ -1,6 +1,6 @@
 ---
 dependencies:
-  - remove-airflow
+  - remove-airflow-server
   - remove-airflow-db
 
 galaxy_info:

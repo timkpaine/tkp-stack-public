@@ -86,26 +86,24 @@
           return 301 https://$host$request_uri;
       }
   become: true
-  when: inventory_hostname is match("dev*")
 
-- name: Add nginx server file for dokku
-  ansible.builtin.copy:
-    dest: /etc/nginx/conf.d/{{ NGINX_DOKKU }}-dokku.conf
-    mode: '0644'
-    content: |
-      include /home/dokku/*/nginx.conf;
+# - name: Add nginx server file for dokku
+#   ansible.builtin.copy:
+#     dest: /etc/nginx/conf.d/{{ NGINX_DOKKU }}-dokku.conf
+#     mode: '0644'
+#     content: |
+#       include /home/dokku/*/nginx.conf;
 
-      server_tokens off;
+#       server_tokens off;
 
-      # Settings from https://mozilla.github.io/server-side-tls/ssl-config-generator/
-      ssl_session_cache   shared:SSL:20m;
-      ssl_session_timeout 1d;
-      ssl_session_tickets off;
+#       # Settings from https://mozilla.github.io/server-side-tls/ssl-config-generator/
+#       ssl_session_cache   shared:SSL:20m;
+#       ssl_session_timeout 1d;
+#       ssl_session_tickets off;
 
-      ssl_dhparam /etc/nginx/dhparam.pem;
-      ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-  become: true
-  when: inventory_hostname is match("dev*")
+#       ssl_dhparam /etc/nginx/dhparam.pem;
+#       ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+#   become: true
 
 - name: Create cache directory if it does not exist
   ansible.builtin.file:

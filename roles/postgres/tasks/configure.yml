@@ -1,10 +1,11 @@
 ---
 - name: Add the user 'postgres' with a bash shell, appending the group 'services' to the user's groups
   ansible.builtin.user:
-    name: postgres
-    shell: /bin/bash
-    group: staff
-    groups: services,staff
+    name: "{{ SERVICE_USERS.POSTGRES.username }}"
+    shell: "{{ SERVICE_USERS.POSTGRES.shell }}"
+    group: "{{ SERVICE_USERS.POSTGRES.group }}"
+    groups: "{{ SERVICE_USERS.POSTGRES.groups }}"
+    uid: "{{ SERVICE_USERS.POSTGRES.uid }}"
     append: true
   become: true
 
@@ -19,11 +20,12 @@
 
 - name: Create a symbolic link on macOS so paths align
   ansible.builtin.file:
-    src: /opt/homebrew/var/postgresql@{{ POSTGRES_VERSION }}
+    # src: /opt/homebrew/var/postgresql@{{ POSTGRES_VERSION }}
     dest: /var/lib/pgsql/{{ POSTGRES_VERSION }}
+    mode: '0700'
     owner: postgres
     group: services
-    state: link
+    state: directory
   become: true
   when: "OS == 'macOS'"
 
@@ -62,15 +64,34 @@
     create: true
   become: true
 
+- name: Setup postgres port
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/postgresql.conf
+    regexp: '^listen_addresses'
+    line: "listen_addresses = '*'"
+  become: true
+  become_user: postgres
+  when: MACHINE_LOCATION == 'internal'
+
 - name: Configure postgres access
   ansible.builtin.blockinfile:
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/pg_hba.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     block: |
-      host all all 127.0.0.1/8       ident
-      host all all 127.0.0.1/8       md5
-      host all all {{ VPN_BASE_IP }}/8 md5
+      host all all 127.0.0.1/32 ident
+      host all all 127.0.0.1/32 md5
+      host all all {{ VPN_BASE_IP }}/32 md5
   become: true
+
+- name: Configure postgres access
+  ansible.builtin.blockinfile:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/data/pg_hba.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - INTERNAL DB"
+    block: |
+      host all all 0.0.0.0/0 trust
+  become: true
+  become_user: postgres
+  when: MACHINE_LOCATION == 'internal'
 
 - name: Create etc database directory
   ansible.builtin.file:

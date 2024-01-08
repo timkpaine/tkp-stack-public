@@ -13,6 +13,7 @@
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf
   register: db_data
   become: true
+  become_user: postgres
 
 - name: Create airflow db
   ansible.builtin.shell: |
@@ -30,16 +31,37 @@
     regexp: '^port ='
     line: "port = {{ PORTS_AIRFLOW_POSTGRES }}"
   become: true
+  become_user: postgres
+
+- name: Setup postgres port
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf
+    regexp: '^listen_addresses'
+    line: "listen_addresses = '*'"
+  become: true
+  become_user: postgres
+  when: MACHINE_LOCATION == 'internal'
 
 - name: Configure postgres access
   ansible.builtin.blockinfile:
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/pg_hba.conf
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
     block: |
-      host all all 127.0.0.1/8       ident
-      host all all 127.0.0.1/8       md5
-      host all all {{ VPN_BASE_IP }}/8 md5
+      host all all 127.0.0.1/32 ident
+      host all all 127.0.0.1/32 md5
+      host all all {{ VPN_BASE_IP }}/32 md5
   become: true
+  become_user: postgres
+
+- name: Configure postgres access
+  ansible.builtin.blockinfile:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/pg_hba.conf
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - INTERNAL DB"
+    block: |
+      host all all 0.0.0.0/0 trust
+  become: true
+  become_user: postgres
+  when: MACHINE_LOCATION == 'internal'
 
 - name: Start airflow db
   ansible.builtin.shell: |

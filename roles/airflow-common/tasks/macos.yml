@@ -1,9 +1,18 @@
 ---
-# - name: Install python dependencies
-#   community.general.homebrew:
-#     name:
-#       - mysql-client
-#     state: present
+- name: Install custom libxmlsec1
+  ansible.builtin.shell: |
+      export DESIRED_SHA="7f35e6ede954326a10949891af2dba47bbe1fc17"
+      wget -O /opt/src/libxmlsec1.rb "https://raw.githubusercontent.com/Homebrew/homebrew-core/${DESIRED_SHA}/Formula/libxmlsec1.rb"
+      brew install --formula /opt/src/libxmlsec1.rb
+  args:
+    executable: /bin/bash
+    creates: /opt/src/libxmlsec1.rb
+
+- name: Install leveldb for airflow
+  community.general.homebrew:
+    name:
+      - leveldb
+    state: present
 
 - name: Create airflow venvs directory if it does not exist
   ansible.builtin.file:
@@ -22,12 +31,14 @@
     group: services
     mode: '0644'
   become: true
-  become_user: airflow
 
 - name: Setup airflow virtualenv
   ansible.builtin.pip:
     requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
     virtualenv: /var/lib/venvs/airflow
+  environment:
+    CFLAGS: "-I/opt/homebrew/include -w"
+    LDFLAGS: "-L/opt/homebrew/lib"
   become: true
   become_user: airflow
 

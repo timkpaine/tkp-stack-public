@@ -2,6 +2,7 @@
 # .ansible-lint
 use_default_rules: true
 skip_list:
+  - ignore-errors
   - jinja[spacing]
   - no-changed-when
   - risky-file-permissions

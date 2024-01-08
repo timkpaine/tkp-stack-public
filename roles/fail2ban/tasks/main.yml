@@ -1,12 +1,12 @@
 ---
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
-  when: "OS == 'EL'"
+  when: "OS == 'EL' and MACHINE_LOCATION == 'external'"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'Ubuntu'"
+  when: "OS == 'Ubuntu' and MACHINE_LOCATION == 'external'"
 
 - name: Setup and run with systemd
   ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS != 'macOS'"
+  when: "MACHINE_LOCATION == 'external'"

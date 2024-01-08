@@ -38,7 +38,7 @@
             gzip off;
           }
       }
-  when: "not inventory_hostname is match('ipa*')"
+  when: "MACHINE_LOCATION == 'external' and inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
 
 - name: Add apache reverse proxy for cockpit
   ansible.builtin.copy:
@@ -76,7 +76,7 @@
         ProxyPass "/" http://127.0.0.1:{{ PORTS_COCKPIT }}/
         ProxyPassReverse "/" "https://cockpit.{{ DOMAINS_IPA }}/"
       </VirtualHost>
-  when: "inventory_hostname is match('ipa*')"
+  when: "inventory_hostname is match(INVENTORY_NAME_IPA)"
 
 - name: Add domain mappings to /etc/hosts for all possible vpn machines's netdata jobs
   ansible.builtin.blockinfile:
@@ -85,5 +85,5 @@
       {{ item.vpn_ip }} cockpit.{{ item.fqdn }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK cockpit.{{ item.username }}"
   become: true
-  when: inventory_hostname is match("vpn*")
+  when: inventory_hostname is match(INVENTORY_NAME_VPN)
   loop: "{{ VPN_USERS }}"

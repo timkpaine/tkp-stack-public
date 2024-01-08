@@ -102,8 +102,7 @@
               proxy_set_header Origin http://$host;
             }
       }
-  when: "not inventory_hostname is match('ipa*')"
-
+  when: inventory_hostname is match(INVENTORY_NAME_DESKTOP)
 
 - name: Add apache reverse proxy for netdata
   ansible.builtin.copy:
@@ -139,7 +138,7 @@
         ProxyPass "/" http://127.0.0.1:{{ PORTS_NETDATA }}/
         ProxyPassReverse "/" "https://monitor.{{ inventory_hostname }}/"
       </VirtualHost>
-  when: "inventory_hostname is match('ipa*')"
+  when: "inventory_hostname is match(INVENTORY_NAME_IPA)"
 
 - name: Add domain mappings to /etc/hosts
   ansible.builtin.blockinfile:
@@ -148,7 +147,7 @@
       {{ VPN_BASE_IP }} monitor.{{ inventory_hostname }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK monitor.{{ inventory_hostname }}"
   become: true
-  when: inventory_hostname is match("vpn*")
+  when: "inventory_hostname is match(INVENTORY_NAME_VPN)"
 
 - name: Add domain mappings to /etc/hosts for all possible vpn machines's netdata jobs
   ansible.builtin.blockinfile:
@@ -157,5 +156,5 @@
       {{ item.vpn_ip }} monitor.{{ item.fqdn }}
     marker: "# {mark} ANSIBLE MANAGED BLOCK monitor.{{ item.username }}"
   become: true
-  when: inventory_hostname is match("vpn*")
+  when: "inventory_hostname is match(INVENTORY_NAME_VPN)"
   loop: "{{ VPN_USERS }}"

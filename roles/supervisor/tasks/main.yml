@@ -1,10 +1,11 @@
 ---
 - name: Add the user 'supervisor'
   ansible.builtin.user:
-    name: supervisor
-    shell: /bin/bash
-    group: staff
-    groups: services,staff
+    name: "{{ SERVICE_USERS.SUPERVISOR.username }}"
+    shell: "{{ SERVICE_USERS.SUPERVISOR.shell }}"
+    group: "{{ SERVICE_USERS.SUPERVISOR.group }}"
+    groups: "{{ SERVICE_USERS.SUPERVISOR.groups }}"
+    uid: "{{ SERVICE_USERS.SUPERVISOR.uid }}"
     append: true
   become: true
 

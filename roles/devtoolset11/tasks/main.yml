@@ -1,4 +1,0 @@
----
-- name: Include EL specific tasks
-  ansible.builtin.include_tasks: el.yml
-  when: "OS == 'EL'"

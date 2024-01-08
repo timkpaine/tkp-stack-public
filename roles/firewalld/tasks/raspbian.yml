@@ -1,7 +1,0 @@
----
-- name: Permit traffic in default zone for mdns service
-  ansible.posix.firewalld:
-    service: mdns
-    permanent: true
-    state: enabled
-  when: "OS == 'Raspbian'"

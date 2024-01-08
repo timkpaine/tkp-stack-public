@@ -1,7 +1,4 @@
 ---
-- name: Pull version variable
-  ansible.builtin.include_vars: version.yml
-
 - name: Check to see if database has been initialized
   ansible.builtin.stat:
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf

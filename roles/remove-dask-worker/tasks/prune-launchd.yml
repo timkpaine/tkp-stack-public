@@ -6,13 +6,13 @@
   loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"
   become: true
 
-- name: Unload airflow-db with launchd
+- name: Unload dask-worker with launchd
   community.general.launchd:
     name: timkpaine.dask-worker-{{ '%d' | format(item) }}
     state: unloaded
   become: true
   when: item.stat is defined and item.stat.exists
-  loop: "{{ plist.results }}"
+  loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"
 
 - name: Remove launch daemon for dask worker
   ansible.builtin.file:
@@ -20,4 +20,4 @@
     state: absent
   become: true
   when: item.stat is defined and item.stat.exists
-  loop: "{{ plist.results }}"
+  loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"

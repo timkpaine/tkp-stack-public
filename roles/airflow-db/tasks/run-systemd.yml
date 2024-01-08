@@ -31,7 +31,6 @@
       # Disable OOM kill on the postmaster
       OOMScoreAdjust=-1000
 
-      ExecStartPre=/usr/local/bin/postgresql-14-check-db-dir ${PGDATA}
       ExecStart=/usr/local/bin/pg_ctl start -D ${PGDATA} -s -o "-p ${PGPORT}" -w -t 300
       ExecStop=/usr/local/bin/pg_ctl stop -D ${PGDATA} -s -m fast
       ExecReload=/usr/local/bin/pg_ctl reload -D ${PGDATA} -s

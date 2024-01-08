@@ -1,0 +1,30 @@
+---
+- name: Add the users with a bash shell, appending the user's groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: "{{ item.shell }}"
+    group: staff
+    groups: "{{ item.groups }}"
+    append: true
+  become: true
+  loop: "{{ USERS }}"
+
+- name: Add the users with a bash shell, appending the user's groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: "{{ item.shell }}"
+    group: "staff"
+    groups: "{{ item.groups }}"
+    append: true
+  become: true
+  loop: "{{ USERS }}"
+
+- name: Add the users with a bash shell, appending the user's groups
+  ansible.builtin.user:
+    name: "{{ item.username }}"
+    shell: "{{ item.shell }}"
+    group: "staff"
+    groups: "{{ item.groups }}"
+    append: true
+  become: true
+  loop: "{{ USERS }}"

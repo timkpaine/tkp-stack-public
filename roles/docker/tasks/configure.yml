@@ -1,0 +1,34 @@
+---
+- name: Alias docker to podman
+  ansible.builtin.file:
+    src: /usr/bin/podman
+    dest: /usr/local/bin/docker
+    owner: root
+    group: root
+    state: link
+  when: "OS != 'macOS'"
+  ignore_errors: true
+
+- name: Setup podman to point to docker.io
+  ansible.builtin.lineinfile:
+    path: /etc/containers/registries.conf
+    regexp: '^unqualified'
+    line: 'unqualified-search-registries = ["docker.io"]'
+  when: "OS != 'macOS'"
+
+- name: Add prune script to crontab (linux)
+  ansible.builtin.lineinfile:
+    path: /etc/crontab
+    search_string: "0 3 * * *"
+    line: "0 3 * * * root podman system prune -a --volumes"
+    create: true
+  when: "OS != 'macOS'"
+
+- name: Add prune script to crontab (mac)
+  ansible.builtin.lineinfile:
+    path: /private/var/at/tabs/{{ ANSIBLE_PRIMARY_USER }}
+    search_string: "0 3 * * *"
+    line: "0 3 * * * bash -lc \"podman system prune -a --volumes\""
+    create: true
+  become: true
+  when: "OS == 'macOS'"

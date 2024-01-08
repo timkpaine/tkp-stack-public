@@ -11,22 +11,12 @@
   ansible.builtin.include_tasks: macos.yml
   when: "OS == 'macOS'"
 
-- name: Add prune script to crontab (linux)
-  ansible.builtin.lineinfile:
-    path: /etc/crontab
-    search_string: "0 3 * * *"
-    line: "0 3 * * * root docker system prune -a --volumes"
-    create: true
-  when: "OS != 'macOS'"
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian'"
 
-- name: Add prune script to crontab (mac)
-  ansible.builtin.lineinfile:
-    path: /private/var/at/tabs/timkpaine
-    search_string: "0 3 * * *"
-    line: "0 3 * * * sudo docker system prune -a --volumes"
-    create: true
-  become: true
-  when: "OS == 'macOS'"
+- name: Configure podman to emulate docker and point to dockerhub
+  ansible.builtin.include_tasks: configure.yml
 
 - name: Run with systemd
   ansible.builtin.include_tasks: run-systemd.yml

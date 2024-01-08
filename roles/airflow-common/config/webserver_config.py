@@ -5,18 +5,10 @@ from airflow.www.fab_security.manager import AUTH_DB
 # from airflow.www.fab_security.manager import AUTH_OAUTH
 # from airflow.www.fab_security.manager import AUTH_OID
 # from airflow.www.fab_security.manager import AUTH_REMOTE_USER
-
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-# Flask-WTF flag for CSRF
 WTF_CSRF_ENABLED = True
-
-# ----------------------------------------------------
-# AUTHENTICATION CONFIG
-# ----------------------------------------------------
-# For details on how to set up each of the following authentication, see
-# http://flask-appbuilder.readthedocs.io/en/latest/security.html# authentication-methods
-# for details.
+# Flask-WTF flag for CSRF
+# http://flask-appbuilder.readthedocs.io/en/latest/security.html#authentication-methods
 
 # The authentication type
 # AUTH_OID : Is for OpenID
@@ -25,17 +17,9 @@ WTF_CSRF_ENABLED = True
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
 # AUTH_OAUTH : Is for OAuth
 AUTH_TYPE = AUTH_DB
-
-# Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
-
-# Uncomment to setup Public role name, no authentication needed
 AUTH_ROLE_PUBLIC = 'Public'
-
-# Will allow user self registration
 # AUTH_USER_REGISTRATION = True
-
-# The recaptcha it's automatically enabled for user self registration is active and the keys are necessary
 # RECAPTCHA_PRIVATE_KEY = PRIVATE_KEY
 # RECAPTCHA_PUBLIC_KEY = PUBLIC_KEY
 

@@ -100,4 +100,4 @@
     name: nginx
     state: restarted
     enabled: true
-  when: "not inventory_hostname is match('ipa*')"
+  when: inventory_hostname is match("dev*")

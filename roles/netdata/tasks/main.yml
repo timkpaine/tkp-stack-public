@@ -1,24 +1,26 @@
 ---
 - name: Add the user 'netdata'
   ansible.builtin.user:
-    name: netdata
-    shell: /bin/bash
-    group: staff
-    groups: services,staff
+    name: "{{ SERVICE_USERS.NETDATA.username }}"
+    shell: "{{ SERVICE_USERS.NETDATA.shell }}"
+    group: "{{ SERVICE_USERS.NETDATA.group }}"
+    groups: "{{ SERVICE_USERS.NETDATA.groups }}"
+    uid: "{{ SERVICE_USERS.NETDATA.uid }}"
     append: true
   become: true
+  when: "MACHINE_LOCATION == 'external'"
 
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
-  when: "OS == 'EL'"
+  when: "OS == 'EL' and MACHINE_LOCATION == 'external'"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'Ubuntu'"
+  when: "OS == 'Ubuntu' and MACHINE_LOCATION == 'external'"
 
 - name: Configure netdata
   ansible.builtin.include_tasks: configure.yml
-
+  when: MACHINE_LOCATION == 'external'
 - name: Run netdata with systemd
   ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS != 'macOS'"
+  when: "OS != 'macOS' and MACHINE_LOCATION == 'external'"

@@ -15,7 +15,7 @@
       User=dask
       Type=simple
       WorkingDirectory=/tmp
-      ExecStart=/var/lib/venvs/dask/bin/dask-worker {{ DASK_HOST }}:{{ PORTS_DASK_SCHEDULER}}
+      ExecStart=/var/lib/venvs/dask/bin/dask-worker {{ DASK_HOST }}:{{ PORTS_DASK_SCHEDULER}} --name {{ inventory_hostname}}-%i
       Restart=always
       RestartSec=5s
 

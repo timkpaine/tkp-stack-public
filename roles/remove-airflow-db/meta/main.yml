@@ -1,6 +1,6 @@
 ---
 dependencies:
-  - role: remove-airflow
+  - role: remove-airflow-server
 
 galaxy_info:
   role_name: remove_airflow_db

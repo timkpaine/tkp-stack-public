@@ -10,6 +10,7 @@
           listen 80;
           return 301 https://$host$request_uri;
         }
+  when: inventory_hostname is match(INVENTORY_NAME_DESKTOP)
 
 - name: Add servers for private routes
   ansible.builtin.copy:
@@ -20,7 +21,7 @@
         root /opt/www-pub/;
         autoindex on;
       }
-  when: inventory_hostname is match("dev*")
+  when: inventory_hostname is match(INVENTORY_NAME_DESKTOP)
 
 - name: Add servers for public routes
   ansible.builtin.copy:
@@ -31,4 +32,4 @@
         root /opt/www-pub/;
         autoindex on;
       }
-  when: inventory_hostname is match("dev*")
+  when: inventory_hostname is match(INVENTORY_NAME_DESKTOP)

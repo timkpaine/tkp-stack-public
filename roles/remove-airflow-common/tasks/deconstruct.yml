@@ -7,6 +7,6 @@
 
 - name: Delete airflow log directory
   ansible.builtin.file:
-    path: /var/log/airflow
+    path: /var/lib/airflow/logs
     state: absent
   become: true

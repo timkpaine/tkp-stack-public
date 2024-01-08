@@ -1,30 +1,44 @@
 ---
-- name: Pull group variables
-  ansible.builtin.include_vars: groups.yml
-
 - name: Ensure groups exist
   ansible.builtin.group:
-    name: "{{ item }}"
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
     state: present
   become: true
   loop: "{{ GROUPS }}"
 
-- name: Add the users with a bash shell, appending the user's groups
-  ansible.builtin.user:
+- name: Ensure all user groups exist
+  ansible.builtin.group:
     name: "{{ item.username }}"
-    shell: /bin/bash
-    groups: "{{ item.groups }}"
-    append: true
+    gid: "{{ item.uid }}"
+    state: present
   become: true
   loop: "{{ USERS }}"
-  when: "OS != 'macOS'"
 
-- name: Add the users with a bash shell, appending the user's groups
-  ansible.builtin.user:
-    name: "{{ item.username }}"
-    shell: /bin/bash
-    groups: "developers"
-    append: true
+- name: Ensure all automation user groups exist
+  ansible.builtin.group:
+    name: "{{item.value.username }}"
+    gid: "{{ item.value.uid }}"
+    state: present
   become: true
-  loop: "{{ USERS }}"
+  loop: "{{ AUTOMATION_USERS | dict2items }}"
+
+- name: Ensure all service user groups exist
+  ansible.builtin.group:
+    name: "{{item.value.username }}"
+    gid: "{{ item.value.uid }}"
+    state: present
+  become: true
+  loop: "{{ SERVICE_USERS | dict2items }}"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: linux.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include Rasbian specific tasks
+  ansible.builtin.include_tasks: linux.yml
+  when: "OS == 'Raspbian'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
   when: "OS == 'macOS'"

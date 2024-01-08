@@ -1,0 +1,36 @@
+---
+- name: Run configure
+  ansible.builtin.include_tasks: configure.yml
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu'"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS'"
+
+- name: Include Rasbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian'"
+
+##########
+# common #
+##########
+- name: Create src directory if it does not exist
+  ansible.builtin.file:
+    path: /opt/src
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Create repos directory if it does not exist
+  ansible.builtin.file:
+    path: /opt/repos
+    state: directory
+    mode: '0755'
+  become: true

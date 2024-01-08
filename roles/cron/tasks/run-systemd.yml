@@ -5,8 +5,14 @@
     state: restarted
   when: "OS == 'EL'"
 
-- name: Reload service crond
+- name: Reload service cron
   ansible.builtin.systemd:
     name: cron
     state: restarted
-  when: "OS != 'EL'"
+  when: "OS == 'Ubuntu'"
+
+- name: Reload service cron
+  ansible.builtin.systemd:
+    name: cron
+    state: restarted
+  when: "OS == 'Raspbian'"

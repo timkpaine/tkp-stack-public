@@ -1,28 +1,31 @@
 ---
 - name: Add the user 'etcd'
   ansible.builtin.user:
-    name: etcd
-    shell: /bin/bash
-    group: staff
-    groups: services,staff
+    name: "{{ SERVICE_USERS.ETCD.username }}"
+    shell: "{{ SERVICE_USERS.ETCD.shell }}"
+    group: "{{ SERVICE_USERS.ETCD.group }}"
+    groups: "{{ SERVICE_USERS.ETCD.groups }}"
+    uid: "{{ SERVICE_USERS.ETCD.uid }}"
     append: true
   become: true
+  when: "(inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"
 
 - name: Configure etcd
   ansible.builtin.include_tasks: configure.yml
+  when: "(inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"
 
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
-  when: "OS == 'EL'"
+  when: "OS == 'EL' and (inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'Ubuntu'"
+  when: "OS == 'Ubuntu' and (inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"
 
 - name: Include macOS specific tasks
   ansible.builtin.include_tasks: macos.yml
-  when: "OS == 'macOS'"
+  when: "OS == 'macOS' and (inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"
 
 - name: Run etcd with systemd
   ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS != 'macOS'"
+  when: "OS != 'macOS' and (inventory_hostname is match(INVENTORY_NAME_KEYCLOAK) or inventory_hostname is match(INVENTORY_NAME_ETCD_PRIMARY))"

@@ -22,3 +22,4 @@
       - libarrow-dataset-glib-dev
       - libarrow-flight-dev
       - libarrow-flight-glib-dev
+    state: present

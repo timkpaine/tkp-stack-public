@@ -1,53 +1,12 @@
 ---
-################
-# Ubuntu steps #
-################
-- name: Install user packages
-  ansible.builtin.apt:
-    name:
-      - dconf-editor
-      - htop
-    state: present
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
   when: "OS == 'Ubuntu'"
 
-#############
-# macOS steps #
-#############
-- name: Install user packages
-  community.general.homebrew:
-    name:
-      - highlight
-      - htop
-      - lua
-      - lua@5.3
-      - luarocks
-      - multimarkdown
-    state: present
-  when: "OS == 'macOS'"
-
-- name: Install Apps
-  community.general.homebrew:
-    name:
-      - gtkwave
-      - another-redis-desktop-manager
-      - basictex
-      - chromedriver
-      - vagrant
-      - appcleaner
-      - geektool
-      - hyperswitch
-      # - homebrew/cask/iglance
-      - iterm2
-      - keka
-      - licecap
-      - nocturne
-      - omnidisksweeper
-      - onyx
-      - rectangle
-      - soundsource
-      - stats
-        # - tigervnc-viewer
-      - transmission
-    state: present
-  failed_when: false
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
   when: "OS == 'macOS'"

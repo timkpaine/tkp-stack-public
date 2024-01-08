@@ -8,16 +8,14 @@
       - fzf
       - gh
       - golang
-      - graphviz
       - gtop
       # - hexyl
-      # - highlight
+      - highlight
       - hiredis
       # - jq
       - lua
       # - lua@5.3
       - luarocks
-      - lunchy
       - multimarkdown
       # - qt
       # - quantlib
@@ -27,20 +25,14 @@
       # - shyaml
       # - ta-lib
       - tig
-      - tmux
-      - watch
-      - wget
-      - zeromq
-      - zstd
     state: present
-  when: "OS == 'macOS'"
+  when: "inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
 
 - name: Install Apps
   community.general.homebrew:
     name:
       - angry-ip-scanner
       - another-redis-desktop-manager
-      - appcleaner
       - basictex
       - chromedriver
       - gtkwave
@@ -49,8 +41,10 @@
       # - homebrew/cask/iglance
       - iterm2
       - keka
-      - launchcontrol
       - licecap
+      - lua
+      - luarocks
+      - multimarkdown
       # - nocturne
       - numi
       - omnidisksweeper
@@ -63,3 +57,4 @@
       - vagrant
     state: present
   failed_when: false
+  when: "inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
