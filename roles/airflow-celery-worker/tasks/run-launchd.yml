@@ -37,8 +37,6 @@
         <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
         <key>StandardOutPath</key>
         <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
-        <key>WorkingDirectory</key>
-        <string>/var/lib/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}</string>
       </dict>
       </plist>
   become: true
@@ -83,8 +81,6 @@
         <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
         <key>StandardOutPath</key>
         <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
-        <key>WorkingDirectory</key>
-        <string>/var/lib/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}</string>
       </dict>
       </plist>
   become: true

@@ -1,81 +1,81 @@
 ---
 # TODO uncomment
-# - name: Install "core" packages
-#   community.general.homebrew:
-#     name:
-#       - autoconf
-#       - automake
-#       # - boost
-#       - brotli
-#       - cairo
-#       - clang-format
-#       - cmake
-#       - curl
-#       - dos2unix
-#       # - flatbuffers
-#       - gcc
-#       - gh
-#       - git
-#       - git-lfs
-#       - graphviz
-#       - hdf5
-#       - htop
-#       - jemalloc
-#       - jsoncpp
-#       - krb5
-#       - libev
-#       - libevent
-#       - libffi
-#       - libmagic
-#       - libpng
-#       - libpthread-stubs
-#       - librdkafka
-#       - libsodium
-#       - libuv
-#       - libxml2
-#       - libxmlsec1
-#       - lsusb
-#       - lunchy
-#       - lz4
-#       - ncdu
-#       - ncurses
-#       - nginx
-#       - ninja
-#       - nlohmann-json
-#       - nmap
-#       - node
-#       - nvm
-#       - open-mpi
-#       - openjdk@11
-#       - openldap
-#       - openssl@1.1
-#       - pkg-config
-#       - podman
-#       - python@3.11
-#       - rapidjson
-#       - readline
-#       - redis
-#       - ruby
-#       - rustup-init
-#       - shyaml
-#       - snappy
-#       - sqlite
-#       - tbb
-#       - tcl-tk
-#       - telnet
-#       - tmux
-#       - watch
-#       - wget
-#       - zeromq
-#       - zstd
-#     state: present
+- name: Install "core" packages
+  community.general.homebrew:
+    name:
+      - autoconf
+      - automake
+      # - boost
+      - brotli
+      - cairo
+      - clang-format
+      - cmake
+      - curl
+      - dos2unix
+      # - flatbuffers
+      - gcc
+      - gh
+      - git
+      - git-lfs
+      - graphviz
+      - hdf5
+      - htop
+      - jemalloc
+      - jsoncpp
+      - krb5
+      - libev
+      - libevent
+      - libffi
+      - libmagic
+      - libpng
+      - libpthread-stubs
+      - librdkafka
+      - libsodium
+      - libuv
+      - libxml2
+      - libxmlsec1
+      - lsusb
+      - lunchy
+      - lz4
+      - ncdu
+      - ncurses
+      - nginx
+      - ninja
+      - nlohmann-json
+      - nmap
+      - node
+      - nvm
+      - open-mpi
+      - openjdk@11
+      - openldap
+      - openssl@1.1
+      - pkg-config
+      - podman
+      - python@3.11
+      - rapidjson
+      - readline
+      - redis
+      - ruby
+      - rustup-init
+      - shyaml
+      - snappy
+      - sqlite
+      - tbb
+      - tcl-tk
+      - telnet
+      - tmux
+      - watch
+      - wget
+      - zeromq
+      - zstd
+    state: present
 
-# - name: Install "core" packages (casks)
-#   community.general.homebrew_cask:
-#     name:
-#       - appcleaner
-#       - launchcontrol
-#     state: present
+- name: Install "core" packages (casks)
+  community.general.homebrew_cask:
+    name:
+      - appcleaner
+      - launchcontrol
+    state: present
 
 - name: Create programs directory if it does not exist
   ansible.builtin.file:
