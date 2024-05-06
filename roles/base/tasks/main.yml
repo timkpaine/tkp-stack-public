@@ -2,6 +2,9 @@
 - name: Run configure
   ansible.builtin.include_tasks: configure.yml
 
+- name: Run mounts
+  ansible.builtin.include_tasks: mount.yml
+
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
   when: "OS == 'EL'"

@@ -5,6 +5,7 @@ skip_list:
   - ignore-errors
   - jinja[spacing]
   - no-changed-when
+  - no-tabs
   - risky-file-permissions
   - schema[meta]
   - var-naming

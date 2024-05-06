@@ -8,16 +8,17 @@
     group: services
   become: true
 
+# TODO uid here needs to be standardized across servers
 - name: Mount airflow shared SMB drive
   ansible.posix.mount:
-    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/airflow
+    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/var/lib/airflow
     path: /var/lib/airflow
-    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user=airflow,username=airflow,password={{ AIRFLOW_MOUNT_PASSWORD }}"
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
     fstype: cifs
     state: mounted
   become: true
-  when: "OS == 'Ubuntu' or OS == 'Raspbian'"
-# TODO uid here needs to be standardized across servers
+  when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
+  # TODO MAC
 
 - name: Create airflow celery dags directory
   ansible.builtin.file:
@@ -88,3 +89,43 @@
     dest: /etc/profile.d/airflow.sh
     content: 'export AIRFLOW_HOME=/var/lib/airflow'
   become: true
+
+- name: Create airflow data directory
+  ansible.builtin.file:
+    path: /data/airflow
+    state: directory
+    mode: '0775'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Create airflow home directory
+  ansible.builtin.file:
+    path: /mnt/home/airflow
+    state: directory
+    mode: '0775'
+    owner: airflow
+    group: services
+  become: true
+
+- name: Mount home shared SMB drive
+  ansible.posix.mount:
+    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/home/{{ SERVICE_USERS.AIRFLOW.username }}
+    path: /mnt/home/{{ SERVICE_USERS.AIRFLOW.username }}
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
+    fstype: cifs
+    state: mounted
+  become: true
+  when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
+  # TODO MAC
+
+- name: Mount data shared SMB drive
+  ansible.posix.mount:
+    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/data/airflow
+    path: /data/airflow
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
+    fstype: cifs
+    state: mounted
+  become: true
+  when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
+  # TODO MAC

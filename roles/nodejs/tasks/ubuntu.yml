@@ -25,7 +25,7 @@
     dest: /etc/profile.d/nvm.sh
     mode: '0755'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       export NVM_DIR=/usr/local/nvm
       source /opt/src/nvm/nvm.sh

@@ -27,6 +27,15 @@
   become: true
   when: "OS == 'Raspbian'"
 
+- name: Configuration users to reboot
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/reboot
+    line: "{{ item.username }}  ALL=(root) NOPASSWD: /usr/sbin/reboot"
+    create: true
+  loop: "{{ USERS }}"
+  become: true
+  when: "OS == 'Raspbian'"
+
 - name: Configure default sudo path
   ansible.builtin.lineinfile:
     path: /etc/sudoers

@@ -5,7 +5,7 @@
     dest: /lib/systemd/system/airflow-celery-worker@.service
     mode: '0644'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=Airflow Celery Worker, instance %i
@@ -16,7 +16,8 @@
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
       Type=simple
-      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+
       Restart=on-failure
       RestartSec=5s
       PrivateTmp=true
@@ -24,6 +25,34 @@
       [Install]
       WantedBy=multi-user.target
   become: true
+  when: not inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
+
+- name: Copy airflow-celery-worker service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/airflow-celery-worker@.service
+    mode: '0644'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Airflow Celery Worker, instance %i
+      Wants=network.target airflow-postgresql.service airflow-scheduler.service
+      After=network.target airflow-postgresql.service airflow-scheduler.service
+
+      [Service]
+      User=airflow
+      Environment=AIRFLOW_HOME=/var/lib/airflow
+      Type=simple
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,primary,{{inventory_hostname}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+
+      Restart=on-failure
+      RestartSec=5s
+      PrivateTmp=true
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+  when: inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
 
 - name: Reload daemon files
   ansible.builtin.systemd:

@@ -1,11 +1,15 @@
 ---
 - name: Alias docker to podman
-  ansible.builtin.file:
-    src: /usr/bin/podman
+  ansible.builtin.copy:
     dest: /usr/local/bin/docker
     owner: root
-    group: root
-    state: link
+    group: "{{ ROOT_USER_GROUP }}"
+    mode: '0755'
+    content: |
+      #!/usr/bin/sh
+      [ -e /etc/containers/nodocker ] || \
+      echo "Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg." >&2
+      exec podman "$@"
   when: "OS != 'macOS'"
   ignore_errors: true
 

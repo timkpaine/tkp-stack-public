@@ -1,15 +1,4 @@
 ---
-- name: Add the user 'netdata'
-  ansible.builtin.user:
-    name: "{{ SERVICE_USERS.NETDATA.username }}"
-    shell: "{{ SERVICE_USERS.NETDATA.shell }}"
-    group: "{{ SERVICE_USERS.NETDATA.group }}"
-    groups: "{{ SERVICE_USERS.NETDATA.groups }}"
-    uid: "{{ SERVICE_USERS.NETDATA.uid }}"
-    append: true
-  become: true
-  when: "MACHINE_LOCATION == 'external'"
-
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
   when: "OS == 'EL' and MACHINE_LOCATION == 'external'"

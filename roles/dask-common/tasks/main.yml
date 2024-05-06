@@ -8,20 +8,20 @@
     uid: "{{ SERVICE_USERS.DASK.uid }}"
     append: true
   become: true
-  when: "(inventory_hostname is match(INVENTORY_NAME_DASK_WORKER)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
+  when: "(inventory_hostname is regex(INVENTORY_NAME_DASK_WORKERS)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
 
 - name: Configure dask common
   ansible.builtin.include_tasks: configure.yml
-  when: "(inventory_hostname is match(INVENTORY_NAME_DASK_WORKER)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
+  when: "(inventory_hostname is regex(INVENTORY_NAME_DASK_WORKERS)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
 
 - name: Setup Virtualenv
   ansible.builtin.include_tasks: venv.yml
-  when: "(inventory_hostname is match(INVENTORY_NAME_DASK_WORKER)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
+  when: "(inventory_hostname is regex(INVENTORY_NAME_DASK_WORKERS)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: ubuntu.yml
-  when: "OS == 'Ubuntu' and (inventory_hostname is match(INVENTORY_NAME_DASK_WORKER)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
+  when: "OS == 'Ubuntu' and (inventory_hostname is regex(INVENTORY_NAME_DASK_WORKERS)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
 
 - name: Include macOS specific tasks
   ansible.builtin.include_tasks: macos.yml
-  when: "OS == 'macOS' and (inventory_hostname is match(INVENTORY_NAME_DASK_WORKER)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"
+  when: "OS == 'macOS' and (inventory_hostname is regex(INVENTORY_NAME_DASK_WORKERS)) or (inventory_hostname is match(INVENTORY_NAME_DASK_PRIMARY))"

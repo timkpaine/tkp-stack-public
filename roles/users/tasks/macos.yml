@@ -9,22 +9,24 @@
   become: true
   loop: "{{ USERS }}"
 
-- name: Add the users with a bash shell, appending the user's groups
+- name: Add the automation users with a bash shell, appending the user's groups
   ansible.builtin.user:
-    name: "{{ item.username }}"
-    shell: "{{ item.shell }}"
+    name: "{{item.value.username }}"
+    uid: "{{ item.value.uid }}"
+    shell: "{{ item.value.shell }}"
     group: "staff"
-    groups: "{{ item.groups }}"
+    groups: "{{ item.value.groups }}"
     append: true
   become: true
-  loop: "{{ USERS }}"
+  loop: "{{ AUTOMATION_USERS | dict2items }}"
 
-- name: Add the users with a bash shell, appending the user's groups
+- name: Add the service users with a bash shell, appending the user's groups
   ansible.builtin.user:
-    name: "{{ item.username }}"
-    shell: "{{ item.shell }}"
+    name: "{{item.value.username }}"
+    uid: "{{ item.value.uid }}"
+    shell: "{{ item.value.shell }}"
     group: "staff"
-    groups: "{{ item.groups }}"
+    groups: "{{ item.value.groups }}"
     append: true
   become: true
-  loop: "{{ USERS }}"
+  loop: "{{ SERVICE_USERS | dict2items }}"

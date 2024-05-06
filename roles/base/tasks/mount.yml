@@ -1,0 +1,88 @@
+---
+
+- name: Add mount for /mnt using /etc/synthetic.conf
+  ansible.builtin.copy:
+    dest: /etc/synthetic.conf
+    mode: '0644'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      mnt	var/mnt
+      data	var/data
+  when: "OS == 'macOS'"
+
+- name: Create /var/mnt as proxy for /mnt
+  ansible.builtin.file:
+    path: /var/mnt
+    state: directory
+    mode: '0755'
+  become: true
+  when: "OS == 'macOS'"
+
+- name: Create /var/data as proxy for /data
+  ansible.builtin.file:
+    path: /var/data
+    state: directory
+    mode: '0755'
+  become: true
+  when: "OS == 'macOS'"
+
+- name: Create home directory for mount
+  ansible.builtin.file:
+    path: /mnt
+    state: directory
+    mode: '0775'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+  become: true
+  when: "OS != 'macOS'"
+
+- name: Create home directory for mount
+  ansible.builtin.file:
+    path: /mnt/home
+    state: directory
+    mode: '0775'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+  become: true
+
+- name: Create data directory for mount
+  ansible.builtin.file:
+    path: /data
+    state: directory
+    mode: '0775'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+  become: true
+  when: "OS != 'macOS'"
+
+- name: Create home directory for mount
+  ansible.builtin.file:
+    path: /mnt/home
+    state: directory
+    mode: '0775'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+  become: true
+
+- name: Mount home shared SMB drive - dev service account
+  ansible.posix.mount:
+    src: //{{ DOMAINS_SHAREDRIVE }}/Developer/home/{{ AUTOMATION_USERS.DEV.username }}
+    path: /mnt/home/{{ AUTOMATION_USERS.DEV.username }}
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ AUTOMATION_USERS.DEV.uid }},user={{ AUTOMATION_USERS.DEV.username }},username={{ AUTOMATION_USERS.DEV.username }},password={{ SVCDEV_MOUNT_PASSWORD }}"
+    fstype: cifs
+    state: mounted
+  become: true
+  when: "MACHINE_LOCATION == 'internal' and OS == 'Ubuntu' or OS == 'Raspbian'"
+  # TODO mac
+
+- name: Mount home shared SMB drive - prod service account
+  ansible.posix.mount:
+    src: //{{ DOMAINS_SHAREDRIVE }}/Developer/home/{{ AUTOMATION_USERS.PROD.username }}
+    path: /mnt/home/{{ AUTOMATION_USERS.PROD.username }}
+    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ AUTOMATION_USERS.PROD.uid }},user={{ AUTOMATION_USERS.PROD.username }},username={{ AUTOMATION_USERS.PROD.username }},password={{ SVCPROD_MOUNT_PASSWORD }}"
+    fstype: cifs
+    state: mounted
+  become: true
+  when: "MACHINE_LOCATION == 'internal' and OS == 'Ubuntu' or OS == 'Raspbian'"
+  # TODO mac

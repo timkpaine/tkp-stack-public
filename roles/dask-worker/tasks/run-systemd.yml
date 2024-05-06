@@ -4,7 +4,7 @@
     dest: /lib/systemd/system/dask-worker@.service
     mode: '0755'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=Dask worker daemon, instance %i
@@ -29,14 +29,14 @@
     state: directory
     mode: '0755'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
 
 - name: Copy dask-worker service conf
   ansible.builtin.copy:
     dest: /lib/systemd/system/dask-worker@.service.d/override.conf
     mode: '0755'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Service]
       LimitNOFILE=200000

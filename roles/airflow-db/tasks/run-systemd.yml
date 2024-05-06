@@ -4,7 +4,7 @@
     dest: /lib/systemd/system/airflow-postgresql.service
     mode: '0644'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=PostgreSQL database server for airflow

@@ -19,6 +19,12 @@
           <string>/var/lib/venvs/airflow/bin/airflow</string>
           <string>celery</string>
           <string>worker</string>
+          <string>--queues</string>
+          <string>default,workers,{{inventory_hostname}}</string>
+          <string>--celery-hostname</string>
+          <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
+          <string>--pid</string>
+          <string>/var/lib/airflow/celery/{{inventory_hostname}}-{{ '%d' | format(item) }}.pid</string>
         </array>
         <key>EnvironmentVariables</key>
         <dict>
@@ -37,6 +43,53 @@
       </plist>
   become: true
   loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
+  when: not inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
+
+- name: Add launch daemon for airflow celery worker
+  ansible.builtin.copy:
+    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>airflow</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/var/lib/venvs/airflow/bin/airflow</string>
+          <string>celery</string>
+          <string>worker</string>
+          <string>--queues</string>
+          <string>default,primary,{{inventory_hostname}}</string>
+          <string>--celery-hostname</string>
+          <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
+          <string>--pid</string>
+          <string>/var/lib/airflow/celery/{{inventory_hostname}}-{{ '%d' | format(item) }}.pid</string>
+        </array>
+        <key>EnvironmentVariables</key>
+        <dict>
+          <key>AIRFLOW_HOME</key>
+          <string>/var/lib/airflow</string>
+        </dict>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
+        <key>StandardOutPath</key>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
+        <key>WorkingDirectory</key>
+        <string>/var/lib/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}</string>
+      </dict>
+      </plist>
+  become: true
+  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
+  when: inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
 
 - name: Start airflow-celery-worker rwith launchd
   community.general.launchd:

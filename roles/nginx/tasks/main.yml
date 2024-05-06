@@ -1,15 +1,4 @@
 ---
-- name: Add the user 'nginx'
-  ansible.builtin.user:
-    name: "{{ SERVICE_USERS.NGINX.username }}"
-    shell: "{{ SERVICE_USERS.NGINX.shell }}"
-    group: "{{ SERVICE_USERS.NGINX.group }}"
-    groups: "{{ SERVICE_USERS.NGINX.groups }}"
-    uid: "{{ SERVICE_USERS.NGINX.uid }}"
-    append: true
-  become: true
-  when: "MACHINE_LOCATION == 'external'"
-
 - name: Include EL specific tasks
   ansible.builtin.include_tasks: el.yml
   when: "OS == 'EL' and MACHINE_LOCATION == 'external'"

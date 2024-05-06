@@ -18,7 +18,7 @@
     dest: /etc/profile.d/rustup.sh
     mode: '0755'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       export RUSTUP_HOME=~/.rustup
       export CARGO_HOME=~/.cargo

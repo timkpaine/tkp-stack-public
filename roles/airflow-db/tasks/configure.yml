@@ -42,6 +42,14 @@
   become_user: postgres
   when: MACHINE_LOCATION == 'internal'
 
+- name: Configure max users
+  ansible.builtin.lineinfile:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf
+    regexp: '^max_connections = 100'
+    line: "max_connections = 1000"
+  become: true
+  become_user: postgres
+
 - name: Configure postgres access
   ansible.builtin.blockinfile:
     path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/pg_hba.conf

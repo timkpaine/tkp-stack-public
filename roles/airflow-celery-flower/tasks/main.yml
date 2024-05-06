@@ -5,4 +5,4 @@
 
 - name: Run airflow celery worker with launchd
   ansible.builtin.include_tasks: run-launchd.yml
-  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_WORKER)"
+  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)"

@@ -37,7 +37,7 @@
     requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
     virtualenv: /var/lib/venvs/airflow
   environment:
-    CFLAGS: "-I/opt/homebrew/include -w"
+    CFLAGS: "-I/opt/homebrew/include -fno-rtti -w"
     LDFLAGS: "-L/opt/homebrew/lib"
   become: true
   become_user: airflow

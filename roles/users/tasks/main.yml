@@ -6,6 +6,7 @@
     state: present
   become: true
   loop: "{{ GROUPS }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
 
 - name: Ensure all user groups exist
   ansible.builtin.group:
@@ -14,6 +15,7 @@
     state: present
   become: true
   loop: "{{ USERS }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
 
 - name: Ensure all automation user groups exist
   ansible.builtin.group:
@@ -22,6 +24,7 @@
     state: present
   become: true
   loop: "{{ AUTOMATION_USERS | dict2items }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
 
 - name: Ensure all service user groups exist
   ansible.builtin.group:
@@ -30,6 +33,7 @@
     state: present
   become: true
   loop: "{{ SERVICE_USERS | dict2items }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
 
 - name: Include Ubuntu specific tasks
   ansible.builtin.include_tasks: linux.yml

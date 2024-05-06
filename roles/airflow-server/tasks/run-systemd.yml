@@ -4,7 +4,7 @@
     dest: /lib/systemd/system/airflow-webserver.service
     mode: '0644'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=Airflow webserver daemon
@@ -29,7 +29,7 @@
     dest: /lib/systemd/system/airflow-scheduler.service
     mode: '0644'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=Airflow scheduler daemon
@@ -53,7 +53,7 @@
     dest: /lib/systemd/system/airflow-triggerer.service
     mode: '0644'
     owner: root
-    group: root
+    group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
       Description=Airflow triggerer daemon

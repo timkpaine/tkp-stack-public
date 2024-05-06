@@ -9,6 +9,19 @@
     append: true
   become: true
   loop: "{{ USERS }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
+
+- name: Add the automation users
+  ansible.builtin.user:
+    name: "{{item.value.username }}"
+    uid: "{{ item.value.uid }}"
+    shell: "{{ item.value.shell }}"
+    group: "{{ item.value.group }}"
+    groups: "{{ item.value.groups }}"
+    append: true
+  become: true
+  loop: "{{ AUTOMATION_USERS | dict2items }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA
 
 - name: Add the service users
   ansible.builtin.user:
@@ -20,14 +33,4 @@
     append: true
   become: true
   loop: "{{ SERVICE_USERS | dict2items }}"
-
-- name: Add the service users
-  ansible.builtin.user:
-    name: "{{item.value.username }}"
-    uid: "{{ item.value.uid }}"
-    shell: "{{ item.value.shell }}"
-    group: "{{ item.value.group }}"
-    groups: "{{ item.value.groups }}"
-    append: true
-  become: true
-  loop: "{{ SERVICE_USERS | dict2items }}"
+  when: "AUTH_SOURCE != 'ipa'"  # NOTE: external managed by IPA

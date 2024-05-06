@@ -1,11 +1,11 @@
 ---
 - name: Run airflow scheduler/webserver with systemd
   ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS == 'Ubuntu' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is match(INVENTORY_NAME_AIRFLOW_CELERY_WORKER))"
+  when: "OS == 'Ubuntu' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
 
 - name: Run airflow scheduler/webserver with launchd
   ansible.builtin.include_tasks: run-launchd.yml
-  when: "OS == 'macOS' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is match(INVENTORY_NAME_AIRFLOW_CELERY_WORKER))"
+  when: "OS == 'macOS' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
 
 # NOTE:
 # do something like:

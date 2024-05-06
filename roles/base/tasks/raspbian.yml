@@ -11,6 +11,7 @@
 - name: Update all packages to the latest version
   ansible.builtin.apt:
     name:
+      - at
       - autoconf
       - automake
       - avahi-daemon
