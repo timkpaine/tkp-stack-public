@@ -13,8 +13,8 @@
 
 - name: Setup and run with systemd
   ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS != 'macOS'"
+  when: "OS != 'macOS' and MACHINE_LOCATION == 'external'"
 
 - name: Configure traffic
   ansible.builtin.include_tasks: configure.yml
-  when: "OS != 'macOS'"
+  when: "OS != 'macOS' and MACHINE_LOCATION == 'external'"
