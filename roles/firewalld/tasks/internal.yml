@@ -1,0 +1,22 @@
+---
+- name: Permit traffic in default zone for mdns service
+  ansible.posix.firewalld:
+    service: mdns
+    permanent: true
+    state: enabled
+
+- name: Fixup nameserver for local resolution
+  ansible.builtin.lineinfile:
+    path: /etc/nsswitch.conf
+    regexp: '^hosts:'
+    line: "hosts: files mdns4_minimal dns mdns4 mdns"
+  become: true
+
+- name: Allow local in mdns resolution
+  ansible.builtin.copy:
+    dest: /etc/mdns.allow
+    mode: '0644'
+    content: |
+      .local.
+      .local
+  become: true
