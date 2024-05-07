@@ -20,7 +20,7 @@
           <string>celery</string>
           <string>worker</string>
           <string>--queues</string>
-          <string>default,workers,{{inventory_hostname}}</string>
+          <string>default,workers,{{inventory_hostname}},macos</string>
           <string>--celery-hostname</string>
           <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
           <string>--pid</string>
@@ -64,7 +64,7 @@
           <string>celery</string>
           <string>worker</string>
           <string>--queues</string>
-          <string>default,primary,{{inventory_hostname}}</string>
+          <string>default,primary,{{inventory_hostname}},macos</string>
           <string>--celery-hostname</string>
           <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
           <string>--pid</string>

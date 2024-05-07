@@ -16,7 +16,7 @@
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
       Type=simple
-      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
 
       Restart=on-failure
       RestartSec=5s
@@ -43,7 +43,7 @@
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
       Type=simple
-      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,primary,{{inventory_hostname}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,primary,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
 
       Restart=on-failure
       RestartSec=5s
