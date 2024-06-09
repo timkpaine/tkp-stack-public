@@ -2,6 +2,7 @@
 - name: Download apache arrow .deb
   ansible.builtin.get_url:
     url: https://apache.jfrog.io/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-jammy.deb
+    # url: https://apache.jfrog.io/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-noble.deb  # 24.04
     dest: /opt/src/apache-arrow.deb
     mode: '0755'
 
