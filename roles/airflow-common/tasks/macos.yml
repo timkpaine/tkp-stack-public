@@ -36,6 +36,7 @@
   ansible.builtin.pip:
     requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_MACOS_VERSION}}.txt
     virtualenv: /var/lib/venvs/airflow
+    virtualenv_python: '{{ PYTHON_MACOS_VERSION}}'
   environment:
     CFLAGS: "-I/opt/homebrew/include -fno-rtti -w"
     LDFLAGS: "-L/opt/homebrew/lib"

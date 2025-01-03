@@ -21,6 +21,7 @@
   ansible.builtin.pip:
     requirements: /var/lib/venvs/airflow/constraints-{{ PYTHON_LINUX_VERSION }}.txt
     virtualenv: /var/lib/venvs/airflow
+    virtualenv_python: '{{ PYTHON_LINUX_VERSION }}'
   become: true
   become_user: airflow
 
