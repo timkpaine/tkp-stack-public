@@ -15,7 +15,6 @@
       [Service]
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
-      Environment=PATH=/var/lib/venvs/airflow/bin/
       Type=simple
       ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
 
