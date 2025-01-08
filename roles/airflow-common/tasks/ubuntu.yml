@@ -30,6 +30,7 @@
     path: /home/airflow/.bashrc
     block: |
       export AIRFLOW_HOME=/var/lib/airflow
+      export HOME=/mnt/home/airflow
     marker: "# {mark} ANSIBLE MANAGED BLOCK - AIRFLOW HOME"
   become: true
   become_user: airflow

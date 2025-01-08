@@ -2,13 +2,13 @@
 
 - name: Copy airflow-celery-worker service
   ansible.builtin.copy:
-    dest: /lib/systemd/system/airflow-celery-worker@.service
+    dest: /lib/systemd/system/airflow-celery-worker.service
     mode: '0644'
     owner: root
     group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
-      Description=Airflow Celery Worker, instance %i
+      Description=Airflow Celery Worker, instance
       Wants=network.target airflow-postgresql.service airflow-scheduler.service
       After=network.target airflow-postgresql.service airflow-scheduler.service
 
@@ -16,7 +16,7 @@
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
       Type=simple
-      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,workers,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}} --pid /var/lib/airflow/celery/{{inventory_hostname}}.pid --concurrency {{AIRFLOW_WORKER_COUNT*4}}
 
       Restart=on-failure
       RestartSec=5s
@@ -29,13 +29,13 @@
 
 - name: Copy airflow-celery-worker service
   ansible.builtin.copy:
-    dest: /lib/systemd/system/airflow-celery-worker@.service
+    dest: /lib/systemd/system/airflow-celery-worker.service
     mode: '0644'
     owner: root
     group: "{{ ROOT_USER_GROUP }}"
     content: |
       [Unit]
-      Description=Airflow Celery Worker, instance %i
+      Description=Airflow Celery Worker
       Wants=network.target airflow-postgresql.service airflow-scheduler.service
       After=network.target airflow-postgresql.service airflow-scheduler.service
 
@@ -43,7 +43,7 @@
       User=airflow
       Environment=AIRFLOW_HOME=/var/lib/airflow
       Type=simple
-      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,primary,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}}-%i --pid /var/lib/airflow/celery/{{inventory_hostname}}-%i.pid
+      ExecStart=/var/lib/venvs/airflow/bin/airflow celery worker --queues default,primary,{{inventory_hostname}},{{OS|lower}} --celery-hostname {{inventory_hostname}} --pid /var/lib/airflow/celery/{{inventory_hostname}}.pid --concurrency {{AIRFLOW_WORKER_COUNT*4}}
 
       Restart=on-failure
       RestartSec=5s
@@ -63,5 +63,5 @@
   ansible.builtin.systemd:
     state: started
     enabled: true
-    name: "{{ 'airflow-celery-worker@%d' | format(item) }}"
-  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
+    name: "airflow-celery-worker"
+

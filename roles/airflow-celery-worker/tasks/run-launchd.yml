@@ -1,7 +1,7 @@
 ---
 - name: Add launch daemon for airflow celery worker
   ansible.builtin.copy:
-    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}.plist
+    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker.plist
     mode: '0644'
     content: |
       <?xml version="1.0" encoding="UTF-8"?>
@@ -13,7 +13,7 @@
         <key>KeepAlive</key>
         <true/>
         <key>Label</key>
-        <string>timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}</string>
+        <string>timkpaine.airflow-celery-worker</string>
         <key>ProgramArguments</key>
         <array>
           <string>/var/lib/venvs/airflow/bin/airflow</string>
@@ -22,9 +22,11 @@
           <string>--queues</string>
           <string>default,workers,{{inventory_hostname}},macos</string>
           <string>--celery-hostname</string>
-          <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
+          <string>{{inventory_hostname}}</string>
           <string>--pid</string>
-          <string>/var/lib/airflow/celery/{{inventory_hostname}}-{{ '%d' | format(item) }}.pid</string>
+          <string>/var/lib/airflow/celery/{{inventory_hostname}}.pid</string>
+          <string>--concurrency</string>
+          <string>{{AIRFLOW_WORKER_COUNT*4}}</string>
         </array>
         <key>EnvironmentVariables</key>
         <dict>
@@ -34,18 +36,17 @@
         <key>RunAtLoad</key>
         <true/>
         <key>StandardErrorPath</key>
-        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}.err.log</string>
         <key>StandardOutPath</key>
-        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}.out.log</string>
       </dict>
       </plist>
   become: true
-  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
   when: not inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
 
 - name: Add launch daemon for airflow celery worker
   ansible.builtin.copy:
-    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}.plist
+    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-worker.plist
     mode: '0644'
     content: |
       <?xml version="1.0" encoding="UTF-8"?>
@@ -57,7 +58,7 @@
         <key>KeepAlive</key>
         <true/>
         <key>Label</key>
-        <string>timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}</string>
+        <string>timkpaine.airflow-celery-worker</string>
         <key>ProgramArguments</key>
         <array>
           <string>/var/lib/venvs/airflow/bin/airflow</string>
@@ -66,9 +67,11 @@
           <string>--queues</string>
           <string>default,primary,{{inventory_hostname}},macos</string>
           <string>--celery-hostname</string>
-          <string>{{inventory_hostname}}-{{ '%d' | format(item) }}</string>
+          <string>{{inventory_hostname}}</string>
           <string>--pid</string>
-          <string>/var/lib/airflow/celery/{{inventory_hostname}}-{{ '%d' | format(item) }}.pid</string>
+          <string>/var/lib/airflow/celery/{{inventory_hostname}}.pid</string>
+          <string>--concurrency</string>
+          <string>{{AIRFLOW_WORKER_COUNT*4}}</string>
         </array>
         <key>EnvironmentVariables</key>
         <dict>
@@ -78,17 +81,16 @@
         <key>RunAtLoad</key>
         <true/>
         <key>StandardErrorPath</key>
-        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.err.log</string>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}.err.log</string>
         <key>StandardOutPath</key>
-        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}-{{ '%d' | format(item) }}.out.log</string>
+        <string>/var/log/airflow/celery/worker-{{ inventory_hostname }}.out.log</string>
       </dict>
       </plist>
   become: true
-  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
   when: inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)
 
 - name: Start airflow-celery-worker rwith launchd
   community.general.launchd:
-    name: timkpaine.airflow-celery-worker-{{ '%d' | format(item) }}
+    name: timkpaine.airflow-celery-worker
     state: restarted
-  loop: "{{ range(0, AIRFLOW_WORKER_COUNT, 1)  }}"
+
