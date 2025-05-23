@@ -1,6 +1,0 @@
----
-- name: Install netdata
-  ansible.builtin.apt:
-    name:
-      - netdata
-    state: present

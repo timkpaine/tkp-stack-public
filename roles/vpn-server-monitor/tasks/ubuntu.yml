@@ -6,4 +6,3 @@
       - uwsgi-plugin-python3
       - geoip-database
     state: present
-  when: "inventory_hostname is match('vpn*')"

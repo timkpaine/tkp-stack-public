@@ -77,13 +77,3 @@
         ProxyPassReverse "/" "https://cockpit.{{ DOMAINS_IPA }}/"
       </VirtualHost>
   when: "inventory_hostname is match(INVENTORY_NAME_IPA)"
-
-- name: Add domain mappings to /etc/hosts for all possible vpn machines's netdata jobs
-  ansible.builtin.blockinfile:
-    path: /etc/hosts
-    block: |
-      {{ item.vpn_ip }} cockpit.{{ item.fqdn }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK cockpit.{{ item.username }}"
-  become: true
-  when: inventory_hostname is match(INVENTORY_NAME_VPN)
-  loop: "{{ VPN_USERS }}"

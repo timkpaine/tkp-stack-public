@@ -1,7 +1,7 @@
 ---
 - name: Add deadsnakes python
   ansible.builtin.apt_repository:
-    validate_certs: no
+    validate_certs: false
     repo: 'ppa:deadsnakes/ppa'
     state: present
 

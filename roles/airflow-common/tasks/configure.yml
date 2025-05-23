@@ -108,24 +108,41 @@
     group: services
   become: true
 
-- name: Mount home shared SMB drive
+# TODO MAC
+# - name: Mount home shared SMB drive
+#   ansible.posix.mount:
+#     src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/home/{{ SERVICE_USERS.AIRFLOW.username }}
+#     path: /mnt/home/{{ SERVICE_USERS.AIRFLOW.username }}
+#     opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
+#     fstype: cifs
+#     state: mounted
+#   become: true
+#   when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
+# - name: Mount data shared SMB drive
+#   ansible.posix.mount:
+#     src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/data/airflow
+#     path: /data/airflow
+#     opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
+#     fstype: cifs
+#     state: mounted
+#   become: true
+#   when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
+- name: Mount home shared nfs drive
   ansible.posix.mount:
-    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/home/{{ SERVICE_USERS.AIRFLOW.username }}
+    src: "{{ DOMAINS_AIRFLOW_SHAREDRIVE }}:/volume1/Developer/home/{{ SERVICE_USERS.AIRFLOW.username }}"
     path: /mnt/home/{{ SERVICE_USERS.AIRFLOW.username }}
-    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
-    fstype: cifs
+    opts: "defaults"
+    fstype: nfs
     state: mounted
   become: true
   when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
-  # TODO MAC
 
-- name: Mount data shared SMB drive
+- name: Mount data shared nfs drive
   ansible.posix.mount:
-    src: //{{ DOMAINS_AIRFLOW_SHAREDRIVE }}/Developer/data/airflow
+    src: "{{ DOMAINS_AIRFLOW_SHAREDRIVE }}:/volume1/Developer/data/airflow"
     path: /data/airflow
-    opts: "rw,vers=3,file_mode=0600,dir_mode=0700,uid={{ SERVICE_USERS.AIRFLOW.uid }},user={{ SERVICE_USERS.AIRFLOW.username }},username={{ SERVICE_USERS.AIRFLOW.username }},password={{ AIRFLOW_MOUNT_PASSWORD }}"
-    fstype: cifs
+    opts: "defaults"
+    fstype: nfs
     state: mounted
   become: true
   when: "MACHINE_LOCATION == 'internal' and OS != 'macOS'"
-  # TODO MAC

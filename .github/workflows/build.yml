@@ -22,25 +22,16 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: [3.9]
-
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
+    - uses: actions-ext/python/setup@main
       with:
-        python-version: ${{ matrix.python-version }}
+        version: 3.11
 
     - name: Install dependencies
-      run: |
-        pip install ansible ansible-lint
+      run: uv pip install ansible ansible-lint
 
     - name: Lint
-      run: |
-        make lint
+      run: make lint

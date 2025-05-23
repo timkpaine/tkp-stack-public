@@ -64,4 +64,3 @@
     state: started
     enabled: true
     name: "airflow-celery-worker"
-

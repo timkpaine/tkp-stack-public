@@ -93,4 +93,3 @@
   community.general.launchd:
     name: timkpaine.airflow-celery-worker
     state: restarted
-

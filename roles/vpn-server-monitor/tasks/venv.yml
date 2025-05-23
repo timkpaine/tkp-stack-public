@@ -7,7 +7,6 @@
     group: services
     mode: '0755'
   become: true
-  when: "inventory_hostname is match('vpn*')"
 
 - name: Copy requirements file
   ansible.builtin.copy:
@@ -17,7 +16,6 @@
     group: services
     mode: '0644'
   become: true
-  when: "inventory_hostname is match('vpn*')"
 
 - name: Setup openvpn-monitor virtualenv
   ansible.builtin.pip:
@@ -25,7 +23,6 @@
     virtualenv: /var/lib/venvs/openvpn-monitor
   become: true
   become_user: vpnmon
-  when: "inventory_hostname is match('vpn*')"
 
 - name: Create openvpn-monitor config directory in venv
   ansible.builtin.file:
@@ -35,7 +32,6 @@
     owner: vpnmon
     group: services
   become: true
-  when: "inventory_hostname is match('vpn*')"
 
 - name: Link config
   ansible.builtin.file:
@@ -46,4 +42,3 @@
     group: services
     state: link
   become: true
-  when: "inventory_hostname is match('vpn*')"
