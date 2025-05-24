@@ -26,7 +26,7 @@
 
 - name: Create openvpn-monitor config directory in venv
   ansible.builtin.file:
-    path: /var/lib/venvs/openvpn-monitor/etc
+    path: /var/lib/venvs/openvpn-monitor/etc/openvpn-monitor
     state: directory
     mode: '0755'
     owner: vpnmon
@@ -35,8 +35,8 @@
 
 - name: Link config
   ansible.builtin.file:
-    src: /etc/openvpn-monitor.conf
-    dest: /var/lib/venvs/openvpn-monitor/etc/openvpn-monitor.conf
+    src: /etc/openvpn-monitor/openvpn-monitor.conf
+    dest: /var/lib/venvs/openvpn-monitor/etc/openvpn-monitor/openvpn-monitor.conf
     mode: '0755'
     owner: vpnmon
     group: services

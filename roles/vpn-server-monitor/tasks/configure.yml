@@ -60,9 +60,9 @@
     content: |
       [openvpn-monitor]
       site=
-      maps=False
+      enable_maps=True
       maps_height=500
-      geoip_data=/usr/share/GeoIP/GeoIP.dat
+      geoip_data=/usr/share/GeoIP/GeoLite2-City.mmdb
       datetime_format=%d/%m/%Y %H:%M:%S
 
       [VPN1]
