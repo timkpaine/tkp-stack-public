@@ -1,9 +1,0 @@
----
-- name: Add machines (rpi)
-  ansible.builtin.blockinfile:
-    path: /etc/supervisor/multivisor.conf
-    block: |
-      [supervisor:{{ item }}]
-      url={{ item }}:{{ PORTS_SUPERVISOR_MULTIVISOR }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - {{ item }}"
-  loop: "{{ groups['rpi'] }}"

@@ -1,9 +1,0 @@
----
-- name: Install mysql
-  ansible.builtin.dnf:
-    name:
-      - mysql-community-server
-      - mysql-community-client
-      - mysql-community-common
-      - mysql-community-libs
-    state: present

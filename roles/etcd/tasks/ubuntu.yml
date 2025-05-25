@@ -1,3 +1,0 @@
----
-- name: Include generic linux tasks
-  ansible.builtin.include_tasks: linux.yml

@@ -1,6 +1,0 @@
----
-- name: Install firewalld packages
-  ansible.builtin.apt:
-    name:
-      - firewalld
-    state: present

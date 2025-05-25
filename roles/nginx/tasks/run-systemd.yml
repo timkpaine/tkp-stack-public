@@ -1,6 +1,0 @@
----
-- name: Run NGINX
-  ansible.builtin.systemd:
-    state: started
-    enabled: true
-    name: nginx

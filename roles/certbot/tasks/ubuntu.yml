@@ -1,7 +1,0 @@
----
-- name: Install the certbot packages
-  ansible.builtin.apt:
-    name:
-      - certbot
-      - python3-certbot-nginx
-    state: present

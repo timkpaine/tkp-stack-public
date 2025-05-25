@@ -1,6 +1,0 @@
----
-- name: Delete airflow venvs directory if it does not exist
-  ansible.builtin.file:
-    path: /var/lib/venvs/airflow
-    state: absent
-  become: true

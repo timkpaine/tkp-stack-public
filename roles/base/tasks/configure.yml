@@ -1,8 +1,0 @@
----
-- name: Copy all relevant host information to /etc/info.yml
-  ansible.builtin.copy:
-    dest: /etc/info.yml
-    mode: '0755'
-    owner: "{{ ANSIBLE_PRIMARY_USER }}"
-    content: "{{ lookup('ansible.builtin.template', '../config/info.yml') }}"
-  become: true
