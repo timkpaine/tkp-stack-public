@@ -1,0 +1,20 @@
+---
+- name: Check to see if launchd assets are still around
+  ansible.builtin.stat:
+    path: /Library/LaunchDaemons/timkpaine.dask-scheduler.plist
+  register: scheduler_plist
+  become: true
+
+- name: Unload dask scheduler with launchd
+  community.general.launchd:
+    name: timkpaine.dask-scheduler
+    state: unloaded
+  become: true
+  when: scheduler_plist.stat is defined and scheduler_plist.stat.exists
+
+- name: Remove launch daemon for dask scheduler
+  ansible.builtin.file:
+    path: /Library/LaunchDaemons/timkpaine.dask-scheduler.plist
+    state: absent
+  become: true
+  when: scheduler_plist.stat is defined and scheduler_plist.stat.exists

@@ -1,0 +1,56 @@
+---
+- name: Copy dask-worker service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/dask-worker@.service
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Dask worker daemon, instance %i
+      After=dask.service
+      Wants=dask.service
+
+      [Service]
+      User=dask
+      Type=simple
+      WorkingDirectory=/tmp
+      ExecStart=/var/lib/venvs/dask/bin/dask-worker {{ DASK_HOST }}:{{ PORTS_DASK_SCHEDULER}} --name {{ inventory_hostname}}-%i
+      Restart=always
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Create directory for dask-worker service conf
+  ansible.builtin.file:
+    path: /lib/systemd/system/dask-worker@.service.d/
+    state: directory
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+
+- name: Copy dask-worker service conf
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/dask-worker@.service.d/override.conf
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Service]
+      LimitNOFILE=200000
+      LimitNPROC=50000
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run dask-worker
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: "{{ 'dask-worker@%d' | format(item) }}"
+  loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"

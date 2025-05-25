@@ -1,0 +1,59 @@
+---
+- name: Add the user 'prometheus'
+  ansible.builtin.user:
+    name: "{{ SERVICE_USERS.PROMETHEUS.username }}"
+    shell: "{{ SERVICE_USERS.PROMETHEUS.shell }}"
+    group: "{{ SERVICE_USERS.PROMETHEUS.group }}"
+    groups: "{{ SERVICE_USERS.PROMETHEUS.groups }}"
+    uid: "{{ SERVICE_USERS.PROMETHEUS.uid }}"
+    append: true
+  when: "inventory_hostname is match(INVENTORY_NAME_PROMETHEUS)"
+
+- name: Create config directories
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    mode: '0755'
+
+- name: Create config directories
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: Create config directories
+  ansible.builtin.file:
+    path: /var/lib/prometheus
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: Move prometheus files into place
+  ansible.builtin.shell: |
+    cp /opt/src/prometheus-2.35.0.linux*/prometheus /usr/bin
+    cp /opt/src/prometheus-2.35.0.linux*/promtool /usr/bin
+    cp /opt/src/prometheus-2.35.0.linux*/console* /etc/prometheus
+    chown -R prometheus:prometheus /etc/prometheus/
+  args:
+    executable: /bin/bash
+  become: true
+
+- name: Copy prometheus configuration
+  ansible.builtin.copy:
+    dest: /etc/prometheus/prometheus.yml
+    mode: '0755'
+    owner: prometheus
+    group: prometheus
+    content: |
+      global:
+        scrape_interval: 10s
+
+      scrape_configs:
+        - job_name: 'prometheus_master'
+          scrape_interval: 5s
+          static_configs:
+            - targets: ['localhost:{{ PORTS_PROMETHEUS }}']
+  become: true

@@ -1,0 +1,40 @@
+---
+- name: Check to see if launchd assets are still around
+  ansible.builtin.stat:
+    path: /Library/LaunchDaemons/timkpaine.airflow-scheduler.plist
+  register: scheduler_plist
+  become: true
+
+- name: Check to see if launchd assets are still around
+  ansible.builtin.stat:
+    path: /Library/LaunchDaemons/timkpaine.airflow-webserver.plist
+  register: webserver_plist
+  become: true
+
+- name: Unload airflow-webserver with launchd
+  community.general.launchd:
+    name: timkpaine.airflow-webserver
+    state: unloaded
+  become: true
+  when: webserver_plist.stat is defined and webserver_plist.stat.exists
+
+- name: Unload airflow scheduler with launchd
+  community.general.launchd:
+    name: timkpaine.airflow-scheduler
+    state: unloaded
+  become: true
+  when: scheduler_plist.stat is defined and scheduler_plist.stat.exists
+
+- name: Remove launch daemon for airflow scheduler
+  ansible.builtin.file:
+    path: /Library/LaunchDaemons/timkpaine.airflow-scheduler.plist
+    state: absent
+  become: true
+  when: scheduler_plist.stat is defined and scheduler_plist.stat.exists
+
+- name: Remove launch daemon for airflow webserver
+  ansible.builtin.file:
+    path: /Library/LaunchDaemons/timkpaine.airflow-webserver.plist
+    state: absent
+  become: true
+  when: webserver_plist.stat is defined and webserver_plist.stat.exists

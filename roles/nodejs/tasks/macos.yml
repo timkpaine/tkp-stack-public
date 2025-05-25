@@ -1,0 +1,12 @@
+---
+- name: Install node packages
+  community.general.homebrew:
+    name:
+      - node
+    state: present
+
+- name: Install latest yarn
+  community.general.npm:
+    name: yarn
+    global: true
+    state: present

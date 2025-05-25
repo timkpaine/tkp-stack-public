@@ -1,0 +1,20 @@
+---
+dependencies:
+  - role: remove-airflow-server
+
+galaxy_info:
+  role_name: remove_airflow_db
+  author: timkpaine
+  description: Shutdown and remove database for airflow
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+    - name: Raspbian
+    - name: Ubuntu
+    - name: macOS
+  galaxy_tags:
+    - development

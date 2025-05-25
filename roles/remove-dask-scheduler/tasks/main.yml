@@ -1,0 +1,11 @@
+---
+- name: Stop and delete dask scheduler from systemd
+  ansible.builtin.include_tasks: prune-systemd.yml
+  when: "OS != 'macOS'"
+
+- name: Stop and delete dask scheduler from launchd
+  ansible.builtin.include_tasks: prune-launchd.yml
+  when: "OS == 'macOS'"
+
+- name: Deconstruct dask scheduler
+  ansible.builtin.include_tasks: deconstruct.yml

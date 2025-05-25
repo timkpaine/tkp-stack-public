@@ -1,0 +1,12 @@
+---
+- name: Remove dask scheduler working directory
+  ansible.builtin.file:
+    path: /var/lib/dask/scheduler
+    state: absent
+  become: true
+
+- name: Remove dask scheduler working directory
+  ansible.builtin.file:
+    path: /var/log/dask/scheduler
+    state: absent
+  become: true

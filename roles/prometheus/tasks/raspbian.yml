@@ -1,0 +1,27 @@
+---
+- name: Check if prometheus is already installed
+  ansible.builtin.stat:
+    path: /usr/bin/prometheus
+  register: already_installed
+
+- name: Check for prometheus tarball
+  ansible.builtin.stat:
+    path: /opt/src/prometheus-2.35.0.linux-arm4.tar.gz
+  register: tgz_result
+  when: "(already_installed.stat is not defined or not already_installed.stat.exists)"
+
+- name: Download prometheus
+  ansible.builtin.get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.35.0/prometheus-2.35.0.linux-arm64.tar.gz
+    dest: /opt/src
+    checksum: "sha256:3ebe0c533583a9ab03363a80aa629edd8e0cc42da3583e33958eb7abe74d4cd2"
+    mode: '0755'
+  when: "(already_installed.stat is not defined or not already_installed.stat.exists) and (tgz_result.stat is not defined or not tgz_result.stat.exists)"
+
+- name: Extract prometheus tarball
+  ansible.builtin.unarchive:
+    src: /opt/src/prometheus-2.35.0.linux-arm64.tar.gz
+    dest: /opt/src
+    remote_src: true
+    creates: /opt/src/prometheus-2.35.0.linux-arm64
+  when: "(already_installed.stat is not defined or not already_installed.stat.exists)"

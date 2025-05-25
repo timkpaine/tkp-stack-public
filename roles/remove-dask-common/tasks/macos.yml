@@ -1,0 +1,6 @@
+---
+- name: Delete dask venvs directory if it does not exist
+  ansible.builtin.file:
+    path: /var/lib/venvs/dask
+    state: absent
+  become: true

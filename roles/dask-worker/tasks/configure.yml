@@ -1,0 +1,28 @@
+---
+- name: Create dask workers working directory
+  ansible.builtin.file:
+    path: /var/lib/dask/worker
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true
+
+- name: Create dask workers working directory
+  ansible.builtin.file:
+    path: /var/lib/dask/worker/{{ '%d' | format(item) }}
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true
+  loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"
+
+- name: Create dask workers log directory
+  ansible.builtin.file:
+    path: /var/log/dask/worker
+    state: directory
+    mode: '0755'
+    owner: dask
+    group: services
+  become: true

@@ -1,0 +1,116 @@
+---
+- name: Create openvpn-monitor working folder
+  ansible.builtin.file:
+    path: /var/lib/openvpn-monitor
+    state: directory
+    mode: '0755'
+    owner: vpnmon
+    group: services
+  become: true
+
+- name: Create openvpn-monitor log folder
+  ansible.builtin.file:
+    path: /var/log/openvpn-monitor
+    state: directory
+    mode: '0755'
+    owner: vpnmon
+    group: services
+  become: true
+
+# - name: Setup uwsgi config
+#   ansible.builtin.copy:
+#     dest: /etc/uwsgi/apps-available/openvpn-monitor.ini
+#     mode: '0755'
+#     owner: vpnmon
+#     group: services
+#     content: |
+#       [uwsgi]
+#       base = /var/lib/
+#       project = openvpn-monitor
+#       logto = /var/log/openvpn-monitor/%(project).log
+#       plugins = python3
+#       chmod-socket = 774
+#       chown-socket = vpnmon:services
+#       uid = vpnmon
+#       gid = services
+#       chdir = %(base)/%(project)
+#       virtualenv = /var/lib/venvs/openvpn-monitor
+#       module = openvpn-monitor:application
+#       manage-script-name = true
+#       mount=/=openvpn-monitor.py
+#   become: true
+#   when: "inventory_hostname is match('vpn*')"
+
+# - name: Link uwsgi config
+#   ansible.builtin.file:
+#     src: /etc/uwsgi/apps-available/openvpn-monitor.ini
+#     dest: /etc/uwsgi/apps-enabled/openvpn-monitor.ini
+#     mode: '0755'
+#     owner: vpnmon
+#     group: services
+#     state: link
+#   become: true
+
+- name: Setup openvpn-monitor config
+  ansible.builtin.copy:
+    dest: /etc/openvpn-monitor/openvpn-monitor.conf
+    mode: '0755'
+    owner: vpnmon
+    group: services
+    content: |
+      [openvpn-monitor]
+      site=
+      enable_maps=True
+      maps_height=500
+      geoip_data=/usr/share/GeoIP/GeoLite2-City.mmdb
+      datetime_format=%d/%m/%Y %H:%M:%S
+
+      [VPN1]
+      host=localhost
+      port={{ PORTS_VPN_MANAGEMENT }}
+      name={{ inventory_hostname }}
+      password=
+      show_disconnect=False
+  become: true
+
+- name: Add nginx server file for openvpn-monitor
+  ansible.builtin.copy:
+    dest: /etc/nginx/conf.d/{{ NGINX_OPENVPN_MONITOR }}-openvpn-monitor.conf
+    mode: '0644'
+    content: |
+      server {
+          server_name  vpn-monitor.{{ inventory_hostname }};
+          root         /usr/share/nginx/html;
+
+          # Load configuration files for the default server block.
+          include /etc/nginx/default.d/*.conf;
+
+          # allow certbot
+          location /.well-known {
+            autoindex on;
+            root /opt/www-pub/;
+          }
+
+          location / {
+              allow {{ VPN_BASE_IP }}/24;
+              deny all;
+              proxy_pass http://127.0.0.1:{{ PORTS_VPN_MONITOR }};
+              proxy_redirect http://localhost:{{ PORTS_VPN_MONITOR }} https://vpn-monitor.{{ inventory_hostname }};
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+              proxy_hide_header X-Frame-Options;
+              proxy_set_header X-Frame-Options "SAMEORIGIN";
+              proxy_read_timeout 90;
+          }
+      }
+  become: true
+
+- name: Add domain mappings to /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ VPN_BASE_IP }} vpn-monitor.{{ inventory_hostname }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK vpn-monitor.{{ inventory_hostname }}"
+  become: true

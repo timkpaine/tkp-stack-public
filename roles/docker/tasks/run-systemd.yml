@@ -1,0 +1,6 @@
+---
+- name: Run podman
+  ansible.builtin.systemd:
+    name: podman
+    state: started
+    enabled: true

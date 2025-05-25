@@ -1,0 +1,21 @@
+---
+dependencies:
+  - remove-dask-worker
+  - remove-dask-scheduler
+
+galaxy_info:
+  role_name: remove_dask_common
+  author: timkpaine
+  description: Remove dask
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "8"
+        - "9"
+    - name: Raspbian
+    - name: Ubuntu
+    - name: macOS
+  galaxy_tags:
+    - development

@@ -1,0 +1,21 @@
+---
+- name: Check to see if database has been initialized
+  ansible.builtin.stat:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data/postgresql.conf
+  register: db_data
+  become: true
+
+- name: Stop airflow db
+  ansible.builtin.shell: |
+    pg_ctl -D /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data stop || echo "stopped"
+  args:
+    executable: /bin/bash
+  when: db_data.stat is defined and db_data.stat.exists
+  become: true
+  become_user: postgres
+
+- name: Delete airflow db directory
+  ansible.builtin.file:
+    path: /var/lib/pgsql/{{ POSTGRES_VERSION }}/airflow_data
+    state: absent
+  become: true

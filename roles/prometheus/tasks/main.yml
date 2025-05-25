@@ -1,0 +1,16 @@
+---
+- name: Configure prometheus
+  ansible.builtin.include_tasks: configure.yml
+  when: "inventory_hostname is match(INVENTORY_NAME_PROMETHEUS_PRIMARY)"
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL' and inventory_hostname is match(INVENTORY_NAME_PROMETHEUS_PRIMARY)"
+
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian' and inventory_hostname is match(INVENTORY_NAME_PROMETHEUS_PRIMARY)"
+
+- name: Run prometheus with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS' and inventory_hostname is match(INVENTORY_NAME_PROMETHEUS_PRIMARY)"

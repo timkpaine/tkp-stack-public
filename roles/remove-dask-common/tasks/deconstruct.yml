@@ -1,0 +1,12 @@
+---
+- name: Delete dask config directory
+  ansible.builtin.file:
+    path: /etc/dask
+    state: absent
+  become: true
+
+- name: Delete dask working directory
+  ansible.builtin.file:
+    path: /var/lib/dask
+    state: absent
+  become: true

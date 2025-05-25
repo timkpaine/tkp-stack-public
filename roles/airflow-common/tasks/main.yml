@@ -1,0 +1,27 @@
+---
+- name: Add the user 'airflow'
+  ansible.builtin.user:
+    name: "{{ SERVICE_USERS.AIRFLOW.username }}"
+    shell: "{{ SERVICE_USERS.AIRFLOW.shell }}"
+    group: "{{ SERVICE_USERS.AIRFLOW.group }}"
+    groups: "{{ SERVICE_USERS.AIRFLOW.groups }}"
+    uid: "{{ SERVICE_USERS.AIRFLOW.uid }}"
+    append: true
+  become: true
+  when: "(inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
+
+- name: Configure airflow common
+  ansible.builtin.include_tasks: configure.yml
+  when: "(inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
+
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS' and (inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY) or inventory_hostname is regex(INVENTORY_NAME_AIRFLOW_CELERY_WORKERS))"

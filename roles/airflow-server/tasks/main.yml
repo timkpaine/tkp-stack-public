@@ -1,0 +1,12 @@
+---
+- name: Run airflow scheduler/webserver with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS == 'Ubuntu' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)"
+
+- name: Run airflow scheduler/webserver with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)"
+
+# NOTE:
+# do something like:
+# airflow users  create --role Admin --username admin --email admin --firstname admin --lastname admin --password admin

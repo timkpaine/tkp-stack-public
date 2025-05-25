@@ -1,0 +1,12 @@
+---
+- name: Install postgresql dependencies
+  ansible.builtin.apt:
+    name:
+      - postgresql-{{ POSTGRES_VERSION }}
+
+- name: Copy postgres files over
+  ansible.builtin.shell: |
+    cp -r /usr/lib/postgresql/{{ POSTGRES_VERSION }}/* /usr/local/
+  args:
+    creates: "/usr/local/bin/initdb"
+  become: true

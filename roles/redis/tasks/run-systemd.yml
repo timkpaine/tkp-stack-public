@@ -1,0 +1,35 @@
+---
+- name: Copy redis service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/redis.service
+    mode: '0644'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Redis daemon
+      Wants=network.target
+      After=network.target
+
+      [Service]
+      User=redis
+      Type=simple
+      ExecStart=/usr/local/bin/redis /etc/redis/redis.conf
+      Restart=on-failure
+      RestartSec=5s
+      PrivateTmp=true
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run redis
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: redis

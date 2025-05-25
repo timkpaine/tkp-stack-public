@@ -1,0 +1,43 @@
+---
+- name: Add launch daemon for airflow celery flower
+  ansible.builtin.copy:
+    dest: /Library/LaunchDaemons/timkpaine.airflow-celery-flower.plist
+    mode: '0644'
+    content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>UserName</key>
+        <string>airflow</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>timkpaine.airflow-celery-flower</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/var/lib/venvs/airflow/bin/airflow</string>
+          <string>celery</string>
+          <string>flower</string>
+        </array>
+        <key>EnvironmentVariables</key>
+        <dict>
+          <key>AIRFLOW_HOME</key>
+          <string>/var/lib/airflow</string>
+        </dict>
+        <key>RunAtLoad</key>
+        <true/>
+        <key>StandardErrorPath</key>
+        <string>/var/lib/airflow/logs/celery/flower.err.log</string>
+        <key>StandardOutPath</key>
+        <string>/var/lib/airflow/logs/celery/flower.out.log</string>
+        <key>WorkingDirectory</key>
+        <string>/var/lib/airflow/celery</string>
+      </dict>
+      </plist>
+  become: true
+
+- name: Start airflow-celery-flower with launchd
+  community.general.launchd:
+    name: timkpaine.airflow-celery-flower
+    state: restarted

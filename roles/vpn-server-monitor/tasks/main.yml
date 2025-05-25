@@ -1,0 +1,16 @@
+---
+- name: Configure openvpn-monitor
+  ansible.builtin.include_tasks: configure.yml
+  when: "inventory_hostname is match(INVENTORY_NAME_VPN)"
+
+- name: Setup Virtualenv
+  ansible.builtin.include_tasks: venv.yml
+  when: "inventory_hostname is match(INVENTORY_NAME_VPN)"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu' and inventory_hostname is match(INVENTORY_NAME_VPN)"
+
+- name: Run opevpn-monitor with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "inventory_hostname is match(INVENTORY_NAME_VPN)"

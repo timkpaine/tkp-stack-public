@@ -1,0 +1,20 @@
+---
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL' and MACHINE_LOCATION == 'external'"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu' and MACHINE_LOCATION == 'external'"
+
+- name: Include Raspbian specific tasks
+  ansible.builtin.include_tasks: raspbian.yml
+  when: "OS == 'Raspbian' and MACHINE_LOCATION == 'external'"
+
+- name: Configure nginx
+  ansible.builtin.include_tasks: configure.yml
+  when: "MACHINE_LOCATION == 'external' and not inventory_hostname is match(INVENTORY_NAME_IPA)"
+
+- name: Run nginx with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "MACHINE_LOCATION == 'external' and not inventory_hostname is match(INVENTORY_NAME_IPA)"

@@ -1,0 +1,39 @@
+---
+- name: Copy prometheus service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/prometheus.service
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Prometheus
+      Wants=network-online.target
+      After=network-online.target
+
+      [Service]
+      User=prometheus
+      Group=prometheus
+      Type=simple
+      ExecStart=/usr/bin/prometheus \
+      --config.file /etc/prometheus/prometheus.yml \
+      --storage.tsdb.path /var/lib/prometheus/ \
+      --web.console.templates=/etc/prometheus/consoles \
+      --web.console.libraries=/etc/prometheus/console_libraries \
+      --web.listen-address=:{{ PORTS_PROMETHEUS }}
+
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run prometheus
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: prometheus

@@ -1,0 +1,60 @@
+---
+- name: Install user packages
+  community.general.homebrew:
+    name:
+      # - bat
+      # - duf
+      - flyctl
+      - fzf
+      - gh
+      - golang
+      - gtop
+      # - hexyl
+      - highlight
+      - hiredis
+      # - jq
+      - lua
+      # - lua@5.3
+      - luarocks
+      - multimarkdown
+      # - qt
+      # - quantlib
+      # - sbt
+      # - scala
+      # - screenfetch
+      # - shyaml
+      # - ta-lib
+      - tig
+    state: present
+  when: "inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
+
+- name: Install Apps
+  community.general.homebrew:
+    name:
+      - angry-ip-scanner
+      - another-redis-desktop-manager
+      - basictex
+      - chromedriver
+      - gtkwave
+      - geektool
+      - hyperswitch
+      # - homebrew/cask/iglance
+      - iterm2
+      - keka
+      - licecap
+      - lua
+      - luarocks
+      - multimarkdown
+      # - nocturne
+      - numi
+      - omnidisksweeper
+      - onyx
+      - rectangle
+      - soundsource
+      # - stats
+      # - tigervnc-viewer
+      - transmission
+      - vagrant
+    state: present
+  failed_when: false
+  when: "inventory_hostname is match(INVENTORY_NAME_DESKTOP)"

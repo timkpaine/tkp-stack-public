@@ -1,0 +1,44 @@
+---
+- name: Create openvpn-monitor venvs directory if it does not exist
+  ansible.builtin.file:
+    path: /var/lib/venvs/openvpn-monitor
+    state: directory
+    owner: vpnmon
+    group: services
+    mode: '0755'
+  become: true
+
+- name: Copy requirements file
+  ansible.builtin.copy:
+    src: ../config/requirements.txt
+    dest: /var/lib/venvs/openvpn-monitor/requirements.txt
+    owner: vpnmon
+    group: services
+    mode: '0644'
+  become: true
+
+- name: Setup openvpn-monitor virtualenv
+  ansible.builtin.pip:
+    requirements: /var/lib/venvs/openvpn-monitor/requirements.txt
+    virtualenv: /var/lib/venvs/openvpn-monitor
+  become: true
+  become_user: vpnmon
+
+- name: Create openvpn-monitor config directory in venv
+  ansible.builtin.file:
+    path: /var/lib/venvs/openvpn-monitor/etc/openvpn-monitor
+    state: directory
+    mode: '0755'
+    owner: vpnmon
+    group: services
+  become: true
+
+- name: Link config
+  ansible.builtin.file:
+    src: /etc/openvpn-monitor/openvpn-monitor.conf
+    dest: /var/lib/venvs/openvpn-monitor/etc/openvpn-monitor/openvpn-monitor.conf
+    mode: '0755'
+    owner: vpnmon
+    group: services
+    state: link
+  become: true

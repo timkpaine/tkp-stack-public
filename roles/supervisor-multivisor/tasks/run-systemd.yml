@@ -1,0 +1,30 @@
+---
+- name: Run multivisor under systemd service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/multivisor.service
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Multivisor web interface
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart=/var/lib/venvs/supervisor/bin/multivisor --bind *:{{ PORTS_SUPERVISOR_MULTIVISOR_WEB }} -c /etc/supervisor/multivisor.conf
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run multivisor
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: multivisor

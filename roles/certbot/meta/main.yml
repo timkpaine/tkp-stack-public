@@ -1,0 +1,19 @@
+---
+dependencies:
+  - role: nginx
+
+galaxy_info:
+  role_name: certbot
+  author: timkpaine
+  description: Install certbot
+  license: AGPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: EL
+      versions:
+        - "7"
+        - "8"
+        - "9"
+    - name: Ubuntu
+  galaxy_tags:
+    - development

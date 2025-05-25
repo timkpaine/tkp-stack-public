@@ -1,0 +1,12 @@
+---
+- name: Install code-server package
+  community.general.homebrew:
+    name:
+      - code-server
+    state: present
+
+- name: Create symbolic link to bridge different installation paths
+  ansible.builtin.file:
+    src: /opt/homebrew/bin/code-server
+    dest: /usr/local/bin/code-server
+    state: link

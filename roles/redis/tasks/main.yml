@@ -1,0 +1,46 @@
+---
+- name: Add the user 'redis'
+  ansible.builtin.user:
+    name: "{{ SERVICE_USERS.REDIS.username }}"
+    shell: "{{ SERVICE_USERS.REDIS.shell }}"
+    group: "{{ SERVICE_USERS.REDIS.group }}"
+    groups: "{{ SERVICE_USERS.REDIS.groups }}"
+    uid: "{{ SERVICE_USERS.REDIS.uid }}"
+    append: true
+  become: true
+  when: "OS != 'Ubuntu' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+  # ubuntu apt creates a user
+
+- name: Create redis log directory
+  ansible.builtin.file:
+    path: /etc/redis
+    state: directory
+    mode: '0775'
+    owner: redis
+    group: services
+  become: true
+  when: "inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Include EL specific tasks
+  ansible.builtin.include_tasks: el.yml
+  when: "OS == 'EL' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Include Ubuntu specific tasks
+  ansible.builtin.include_tasks: ubuntu.yml
+  when: "OS == 'Ubuntu' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Include macOS specific tasks
+  ansible.builtin.include_tasks: macos.yml
+  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Configure redis common
+  ansible.builtin.include_tasks: configure.yml
+  when: "inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Run redis with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "OS != 'macOS' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"
+
+- name: Run redis with launchd
+  ansible.builtin.include_tasks: run-launchd.yml
+  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_REDIS_PRIMARY)"

@@ -1,0 +1,14 @@
+---
+- name: Install nginx dependencies
+  ansible.builtin.dnf:
+    name:
+      - gd-devel
+      # - GeoIP-devel
+      - libxml2-devel
+      - libxslt-devel
+      - nginx
+      - openssl-devel
+      - compat-openssl11
+      - pcre-devel
+      - perl-ExtUtils-Embed
+    state: present

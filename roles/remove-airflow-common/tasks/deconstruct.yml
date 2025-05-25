@@ -1,0 +1,12 @@
+---
+- name: Delete airflow directory
+  ansible.builtin.file:
+    path: /var/lib/airflow
+    state: absent
+  become: true
+
+- name: Delete airflow log directory
+  ansible.builtin.file:
+    path: /var/lib/airflow/logs
+    state: absent
+  become: true

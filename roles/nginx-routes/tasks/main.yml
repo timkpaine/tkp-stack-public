@@ -1,0 +1,22 @@
+---
+- name: Create static directory
+  ansible.builtin.file:
+    path: /opt/www
+    state: directory
+    mode: '0755'
+  when: "MACHINE_LOCATION == 'external' and inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
+
+- name: Create static-public directory
+  ansible.builtin.file:
+    path: /opt/www-pub
+    state: directory
+    mode: '0755'
+  when: "MACHINE_LOCATION == 'external' and inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
+
+- name: Configure public blocks
+  ansible.builtin.include_tasks: configure.yml
+  when: "MACHINE_LOCATION == 'external' and inventory_hostname is match(INVENTORY_NAME_DESKTOP)"
+
+- name: Run with systemd
+  ansible.builtin.include_tasks: run-systemd.yml
+  when: "MACHINE_LOCATION == 'external' and inventory_hostname is match(INVENTORY_NAME_DESKTOP)"

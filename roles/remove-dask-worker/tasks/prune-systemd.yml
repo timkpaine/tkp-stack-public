@@ -1,0 +1,25 @@
+---
+- name: Stop dask worker
+  ansible.builtin.systemd:
+    state: stopped
+    enabled: false
+    name: dsak-worker@{{ item }}
+  loop: "{{ range(0, DASK_WORKER_COUNT, 1)  }}"
+  become: true
+
+- name: Delete dask-worker service
+  ansible.builtin.file:
+    path: /lib/systemd/system/dask-worker@.service
+    state: absent
+  become: true
+
+- name: Create directory for dask-worker service conf
+  ansible.builtin.file:
+    path: /lib/systemd/system/dask-worker@.service.d/
+    state: absent
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true

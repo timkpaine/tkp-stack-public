@@ -1,0 +1,32 @@
+---
+- name: Copy dask service
+  ansible.builtin.copy:
+    dest: /lib/systemd/system/dask-scheduler.service
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      [Unit]
+      Description=Dask scheduler daemon
+
+      [Service]
+      User=dask
+      Type=simple
+      ExecStart=/var/lib/venvs/dask/bin/dask-scheduler --host 0.0.0.0 --port {{ PORTS_DASK_SCHEDULER }} --dashboard-address :{{ PORTS_DASK_DASHBOARD }}
+      Restart=always
+      RestartSec=5s
+
+      [Install]
+      WantedBy=multi-user.target
+  become: true
+
+- name: Reload daemon files
+  ansible.builtin.systemd:
+    daemon_reload: true
+    force: true
+
+- name: Run dask
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: dask-scheduler

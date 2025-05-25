@@ -1,0 +1,26 @@
+---
+- name: Download rustup.sh
+  ansible.builtin.get_url:
+    url: https://sh.rustup.rs/rustup-init.sh
+    dest: /opt/src/rustup-init.sh
+    mode: '0755'
+
+- name: Run rustup installer
+  ansible.builtin.command:
+    cmd: /opt/src/rustup-init.sh -y --no-modify-path
+    creates: "/usr/local/rust/bin/rustup"
+  environment:
+    RUSTUP_HOME: '/usr/local/rust'
+    CARGO_HOME: '/usr/local/rust'
+
+- name: Add rust config to /etc/profile.d
+  ansible.builtin.copy:
+    dest: /etc/profile.d/rustup.sh
+    mode: '0755'
+    owner: root
+    group: "{{ ROOT_USER_GROUP }}"
+    content: |
+      export RUSTUP_HOME=~/.rustup
+      export CARGO_HOME=~/.cargo
+      export PATH="/usr/local/rust/bin:$PATH"
+  become: true

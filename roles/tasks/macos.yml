@@ -1,0 +1,110 @@
+---
+# TODO uncomment
+- name: Install "core" packages
+  community.general.homebrew:
+    name:
+      - autoconf
+      - automake
+      # - boost
+      - brotli
+      - cairo
+      - clang-format
+      - cmake
+      - curl
+      - dos2unix
+      # - flatbuffers
+      - gcc
+      - gh
+      - git
+      - git-lfs
+      - graphviz
+      - hdf5
+      - htop
+      - jemalloc
+      - jsoncpp
+      - krb5
+      - libev
+      - libevent
+      - libffi
+      - libmagic
+      - libpng
+      - libpthread-stubs
+      - librdkafka
+      - libsodium
+      - libuv
+      - libxml2
+      - libxmlsec1
+      - lsusb
+      - lunchy
+      - lz4
+      - ncdu
+      - ncurses
+      - nginx
+      - ninja
+      - nlohmann-json
+      - nmap
+      - node
+      - nvm
+      - open-mpi
+      - openjdk@11
+      - openldap
+      - openssl@1.1
+      - pkg-config
+      - podman
+      - python@3.11
+      - rapidjson
+      - readline
+      - redis
+      - ruby
+      - rustup-init
+      - shyaml
+      - snappy
+      - sqlite
+      - tbb
+      - tcl-tk
+      - telnet
+      - tmux
+      - watch
+      - wget
+      - zeromq
+      - zstd
+    state: present
+
+- name: Install "core" packages (casks)
+  community.general.homebrew_cask:
+    name:
+      - appcleaner
+      - launchcontrol
+    state: present
+
+- name: Create programs directory if it does not exist
+  ansible.builtin.file:
+    path: /Users/timkpaine/Developer
+    state: directory
+    mode: '0755'
+
+- name: Create projects directory if it does not exist
+  ansible.builtin.file:
+    path: /Users/timkpaine/Developer/projects
+    state: directory
+    mode: '0755'
+
+# NOTE: for intel macs, you'll need to symlink around
+- name: Ensure homebrew in path
+  ansible.builtin.lineinfile:
+    path: /etc/paths
+    line: "/opt/homebrew/bin"
+  become: true
+
+- name: Create /etc/profile.d directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/profile.d/
+    state: directory
+    mode: '0755'
+  become: true
+
+- name: Add homebrew bin dir to system-wide $PATH.
+  ansible.builtin.copy:
+    dest: /etc/profile.d/homebrew.sh
+    content: 'PATH=$PATH:/opt/homebrew/bin'
+  become: true

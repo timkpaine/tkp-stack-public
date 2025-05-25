@@ -1,0 +1,6 @@
+---
+- name: Run cockpit
+  ansible.builtin.systemd:
+    state: started
+    enabled: true
+    name: cockpit

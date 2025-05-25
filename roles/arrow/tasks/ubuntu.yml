@@ -1,0 +1,26 @@
+---
+- name: Download apache arrow .deb
+  ansible.builtin.get_url:
+    url: https://apache.jfrog.io/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-jammy.deb
+    # url: https://apache.jfrog.io/artifactory/arrow/ubuntu/apache-arrow-apt-source-latest-noble.deb  # 24.04
+    dest: /opt/src/apache-arrow.deb
+    mode: '0755'
+
+- name: Install apache-arrow.deb file
+  ansible.builtin.apt:
+    deb: /opt/src/apache-arrow.deb
+
+- name: Run the equivalent of "apt-get update"
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install apache arrow libraries
+  ansible.builtin.apt:
+    name:
+      - libarrow-dev
+      - libarrow-glib-dev
+      - libarrow-dataset-dev
+      - libarrow-dataset-glib-dev
+      - libarrow-flight-dev
+      - libarrow-flight-glib-dev
+    state: present
