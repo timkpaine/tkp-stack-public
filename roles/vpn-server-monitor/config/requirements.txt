@@ -1,7 +1,0 @@
-gdal==3.8.4
-geoio
-geoip
-geoip2
-gunicorn
-ipaddress
-openvpn-monitor

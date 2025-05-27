@@ -1,8 +1,0 @@
----
-- name: Run airflow celery flower with systemd
-  ansible.builtin.include_tasks: run-systemd.yml
-  when: "OS != 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)"
-
-- name: Run airflow celery worker with launchd
-  ansible.builtin.include_tasks: run-launchd.yml
-  when: "OS == 'macOS' and inventory_hostname is match(INVENTORY_NAME_AIRFLOW_PRIMARY)"

@@ -1,7 +1,0 @@
----
-- name: Install podman
-  ansible.builtin.apt:
-    name:
-      - podman
-      # - podman-compose
-    state: present

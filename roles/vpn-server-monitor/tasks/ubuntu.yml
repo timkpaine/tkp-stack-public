@@ -1,8 +1,0 @@
----
-- name: Install openvpn-monitor dependencies
-  ansible.builtin.apt:
-    name:
-      - uwsgi
-      - uwsgi-plugin-python3
-      - geoip-database
-    state: present

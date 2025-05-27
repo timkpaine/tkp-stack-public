@@ -1,9 +1,0 @@
----
-- name: Install cockpit
-  ansible.builtin.dnf:
-    name:
-      - cockpit
-      - cockpit-packagekit
-      - cockpit-podman
-      - cockpit-system
-    state: present
